@@ -1,0 +1,13 @@
+{
+  "nav": {
+    "connect": "Kết nối ví",
+    "home": "Trang chủ"
+  },
+  "auction": {
+    "highest_bid": "Giá cao nhất",
+    "ends_in": "Kết thúc trong",
+    "place_bid": "Đặt giá ngay",
+    "history": "Lịch sử đấu giá",
+    "placeholder": "Nhập số lượng..."
+  }
+}

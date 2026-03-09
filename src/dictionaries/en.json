@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "connect": "Connect Wallet",
+    "home": "Home"
+  },
+  "auction": {
+    "highest_bid": "Highest Bid",
+    "ends_in": "Ends in",
+    "place_bid": "Place Bid",
+    "placeholder": "Enter amount..."
+  },
+  "genealogy": {
+  "family_name": "Family Name",
+  "generation": "Generation",
+  "origin": "Origin"
+}
+}
