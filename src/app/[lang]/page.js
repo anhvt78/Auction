@@ -169,45 +169,48 @@ export default async function AuctionPage({ params }) {
           {/* Lưới các thẻ Đấu giá */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {auctions.map((item) => (
-              <div
+              <Link
                 key={item.id}
-                className="bg-white border border-slate-200 rounded-sm hover:shadow-md transition-shadow cursor-pointer group"
+                href={`/${lang}/pages/auctionDetail?id=${item.id}`}
+                className="block"
               >
-                <div className="flex justify-between items-start p-4">
-                  <span className="bg-[#77b300] text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
-                    <Gavel size={10} /> {item.status}
-                  </span>
-                  <div className="text-right">
-                    <h3 className="text-[#003366] text-xl font-bold group-hover:underline">
-                      {item.location}
-                    </h3>
-                    <p className="text-[10px] text-slate-500 font-bold mt-1">
-                      SCHEDULED CLOSURE DATE: {item.date}
-                    </p>
-                    <p className="text-[9px] text-blue-500 font-bold tracking-tighter">
-                      GMT+0700 (INDOCHINA TIME)
-                    </p>
+                <div className="bg-white border border-slate-200 rounded-sm hover:shadow-md transition-shadow cursor-pointer group">
+                  <div className="flex justify-between items-start p-4">
+                    <span className="bg-[#77b300] text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
+                      <Gavel size={10} /> {item.status}
+                    </span>
+                    <div className="text-right">
+                      <h3 className="text-[#003366] text-xl font-bold group-hover:underline">
+                        {item.location}
+                      </h3>
+                      <p className="text-[10px] text-slate-500 font-bold mt-1">
+                        SCHEDULED CLOSURE DATE: {item.date}
+                      </p>
+                      <p className="text-[9px] text-blue-500 font-bold tracking-tighter">
+                        GMT+0700 (INDOCHINA TIME)
+                      </p>
+                    </div>
+                    <ChevronRight className="text-slate-300 group-hover:text-blue-500" />
                   </div>
-                  <ChevronRight className="text-slate-300 group-hover:text-blue-500" />
-                </div>
 
-                <div className="grid grid-cols-2 border-t border-slate-100 text-center divide-x divide-slate-100">
-                  <div className="py-4">
-                    <p className="text-2xl text-slate-700">{item.lots}</p>
-                    <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
-                      <Package size={12} /> Lots in auction
-                    </p>
-                  </div>
-                  <div className="py-4">
-                    <p className="text-2xl text-slate-700">
-                      {item.time.split(" ")[0]}
-                    </p>
-                    <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
-                      <Clock size={12} /> {item.time.split(" ")[1]} to Closure
-                    </p>
+                  <div className="grid grid-cols-2 border-t border-slate-100 text-center divide-x divide-slate-100">
+                    <div className="py-4">
+                      <p className="text-2xl text-slate-700">{item.lots}</p>
+                      <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
+                        <Package size={12} /> Lots in auction
+                      </p>
+                    </div>
+                    <div className="py-4">
+                      <p className="text-2xl text-slate-700">
+                        {item.time.split(" ")[0]}
+                      </p>
+                      <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
+                        <Clock size={12} /> {item.time.split(" ")[1]} to Closure
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
