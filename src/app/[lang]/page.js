@@ -18,6 +18,8 @@ import {
   Menu,
   X,
   LayoutDashboard,
+  ShieldCheck,
+  Scale,
 } from "lucide-react";
 
 export default function AuctionPage({ params }) {
@@ -126,6 +128,14 @@ export default function AuctionPage({ params }) {
                 </span>
               </Link>
             )}
+
+            <Link
+              href={`/${lang}/pages/arbitrationPortal`}
+              className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+            >
+              <Scale size={16} />
+              {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
+            </Link>
 
             {/* <button className="flex items-center gap-1 hover:text-slate-300 transition-colors">
               <UserPlus size={16} /> {dict?.nav?.register}

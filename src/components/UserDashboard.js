@@ -12,6 +12,8 @@ import {
   Clock,
   ShieldCheck,
   ChevronRight,
+  ShieldAlert,
+  Scale,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -21,6 +23,8 @@ import CreateAuctionForm from "./CreateAuctionForm";
 import MyAuctionDetail from "./MyAuctionDetail";
 import MyBidDetail from "./MyBidDetail";
 import SettingsForm from "./SettingsForm";
+import DisputeList from "./DisputeList";
+import ArbitrationDetail from "./ArbitrationDetail";
 
 export default function UserDashboard({ lang }) {
   // Trạng thái điều hướng
@@ -39,6 +43,13 @@ export default function UserDashboard({ lang }) {
       label: lang === "vi" ? "Đã trúng thầu" : "Won Items",
       value: 1,
       icon: <Package size={20} />,
+    },
+    {
+      /* Gom cả đang tranh chấp và đã xong vào một mục, hoặc chỉ hiện vụ việc đang mở */
+      label: lang === "vi" ? "Tranh chấp" : "Disputes",
+      value: "1/6", // Hiển thị: 1 vụ đang mở / 6 vụ tổng cộng
+      icon: <ShieldAlert size={20} />,
+      color: "text-amber-500",
     },
     {
       label: lang === "vi" ? "Số dư ký quỹ" : "Escrow Balance",
@@ -96,6 +107,11 @@ export default function UserDashboard({ lang }) {
               icon: <History size={18} />,
             },
             {
+              id: "disputes",
+              label: lang === "vi" ? "Tranh chấp" : "Disputes",
+              icon: <ShieldAlert size={18} />,
+            }, // Tab mới
+            {
               id: "settings",
               label: lang === "vi" ? "Cài đặt" : "Settings",
               icon: <Settings size={18} />,
@@ -125,6 +141,10 @@ export default function UserDashboard({ lang }) {
                 (lang === "vi"
                   ? "Các lô hàng bạn đang đấu giá"
                   : "Your Bidding History")}
+              {activeTab === "disputes" &&
+                (lang === "vi"
+                  ? "Các lô hàng bạn đang tranh chấp"
+                  : "Your Bidding Disputes")}
               {activeTab === "settings" &&
                 (lang === "vi" ? "Thiết lập tài khoản" : "Account Settings")}
             </h2>
@@ -214,6 +234,25 @@ export default function UserDashboard({ lang }) {
                 </div>
               )}
 
+              {
+                activeTab === "disputes" &&
+                  (viewMode === "dispute-detail" ? (
+                    <ArbitrationDetail
+                      data={selectedItem}
+                      lang={lang}
+                      onBack={() => setViewMode("list")}
+                    />
+                  ) : (
+                    <DisputeList
+                      lang={lang}
+                      onViewDetail={(item) => {
+                        setSelectedItem(item);
+                        setViewMode("dispute-detail");
+                      }}
+                    />
+                  ))
+                // <div>Test Dispute Tab</div>
+              }
               {activeTab === "settings" && <SettingsForm lang={lang} />}
             </div>
           </div>
@@ -257,7 +296,7 @@ export default function UserDashboard({ lang }) {
       <main className="max-w-6xl mx-auto px-4 -mt-8">
         {/* Stats bar */}
         {viewMode === "list" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             {stats.map((stat, i) => (
               <div
                 key={i}
