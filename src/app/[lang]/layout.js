@@ -1,12 +1,31 @@
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { Web3Provider } from "@/components/Web3Provider";
+import { getDictionary } from "@/lib/get-dictionary";
 
 const inter = Inter({ subsets: ["latin"] });
 
 // 1. Đây là Server Component, export này sẽ hoạt động
 export async function generateStaticParams() {
   return [{ lang: "vi" }, { lang: "en" }];
+}
+
+// Hàm tạo metadata động dựa trên ngôn ngữ
+export async function generateMetadata({ params }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
+  return {
+    title: dict?.nav?.title || "U.S. Embassy Online Auction",
+    description: dict?.banner?.description || "Online Auction System",
+    // Các thuộc tính khác giúp hỗ trợ SEO tốt hơn
+    alternates: {
+      languages: {
+        "en-US": "/en",
+        "vi-VN": "/vi",
+      },
+    },
+  };
 }
 
 export default async function RootLayout({ children, params }) {

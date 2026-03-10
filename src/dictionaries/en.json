@@ -1,17 +1,48 @@
 {
   "nav": {
-    "connect": "Connect Wallet",
-    "home": "Home"
+    "title": "U.S. Embassy Online Auction",
+    "home": "Home",
+    "register": "Register",
+    "login": "Login",
+    "my_account": "My Account"
+  },
+  "banner": {
+    "title": "U.S. Embassy Online Auction",
+    "description": "The U.S. Embassies are selling surplus property (household furniture, office furniture, appliances, vehicles and other items) via a Web-based Electronic Auction. During this period you can actively take part and submit your bid for the surplus property."
   },
   "auction": {
-    "highest_bid": "Highest Bid",
-    "ends_in": "Ends in",
-    "place_bid": "Place Bid",
-    "placeholder": "Enter amount..."
+    "all_auctions": "All Auctions",
+    "status_active": "ACTIVE",
+    "lots_in_auction": "Lots in auction",
+    "to_closure": "to Closure",
+    "scheduled_date": "SCHEDULED CLOSURE DATE"
   },
-  "genealogy": {
-  "family_name": "Family Name",
-  "generation": "Generation",
-  "origin": "Origin"
-}
+  "dashboard": {
+    "title": "User Dashboard",
+    "active_session": "Active Session",
+    "return_button": "Return to Auction",
+    "stats": {
+      "bidding": "Bidding",
+      "won": "Won",
+      "total_value": "Total Value",
+      "items": "Items"
+    },
+    "table": {
+      "title": "Active Bids",
+      "item": "Item",
+      "current_price": "Current Price",
+      "status": "Status",
+      "action": "Action",
+      "outbid": "Outbid",
+      "raise_bid": "Raise Bid"
+    },
+    "history": {
+      "title": "Recent Activity",
+      "bid_placed": "Bid Placed",
+      "auction_won": "Auction Won",
+      "withdraw": "Withdraw",
+      "success": "Success",
+      "pending": "Pending"
+    }
+  }
 }

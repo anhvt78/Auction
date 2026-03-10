@@ -1,13 +1,48 @@
 {
   "nav": {
-    "connect": "Kết nối ví",
-    "home": "Trang chủ"
+    "title": "Đấu giá Trực tuyến Đại sứ quán Hoa Kỳ",
+    "home": "Trang chủ",
+    "register": "Đăng ký",
+    "login": "Đăng nhập",
+    "my_account": "Của tôi"
+  },
+  "banner": {
+    "title": "Đấu giá Trực tuyến Đại sứ quán Hoa Kỳ",
+    "description": "Đại sứ quán Hoa Kỳ đang bán các tài sản dư thừa (đồ nội thất gia đình, nội thất văn phòng, đồ gia dụng, phương tiện và các vật phẩm khác) thông qua hình thức Đấu giá Điện tử trên nền tảng Web. Trong thời gian này, bạn có thể tham gia tích cực và gửi giá thầu của mình cho các tài sản đó."
   },
   "auction": {
-    "highest_bid": "Giá cao nhất",
-    "ends_in": "Kết thúc trong",
-    "place_bid": "Đặt giá ngay",
-    "history": "Lịch sử đấu giá",
-    "placeholder": "Nhập số lượng..."
+    "all_auctions": "Tất cả các cuộc đấu giá",
+    "status_active": "ĐANG DIỄN RA",
+    "lots_in_auction": "Lô hàng trong phiên",
+    "to_closure": "đến khi kết thúc",
+    "scheduled_date": "NGÀY KẾT THÚC DỰ KIẾN"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển cá nhân",
+    "active_session": "Phiên hoạt động",
+    "return_button": "Quay lại đấu giá",
+    "stats": {
+      "bidding": "Đang đấu giá",
+      "won": "Đã thắng",
+      "total_value": "Tổng giá trị",
+      "items": "Vật phẩm"
+    },
+    "table": {
+      "title": "Đấu giá đang tham gia",
+      "item": "Vật phẩm",
+      "current_price": "Giá hiện tại",
+      "status": "Trạng thái",
+      "action": "Thao tác",
+      "outbid": "Bị vượt giá",
+      "raise_bid": "Nâng giá"
+    },
+    "history": {
+      "title": "Hoạt động gần đây",
+      "bid_placed": "Đã đặt giá",
+      "auction_won": "Thắng đấu giá",
+      "withdraw": "Rút tiền",
+      "success": "Thành công",
+      "pending": "Chờ xử lý"
+    }
   }
 }

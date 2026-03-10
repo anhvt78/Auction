@@ -1,6 +1,10 @@
-import { getDictionary } from "@/lib/get-dictionary";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { getDictionary } from "@/lib/get-dictionary";
+import UserDashboard from "@/components/UserDashboard";
 import {
   Gavel,
   Home,
@@ -11,13 +15,45 @@ import {
   Clock,
   ChevronRight,
   ChevronDown,
+  Menu,
+  X,
+  LayoutDashboard,
 } from "lucide-react";
 
-export default async function AuctionPage({ params }) {
-  const { lang } = await params;
-  const dict = await getDictionary(lang);
+export default function AuctionPage({ params }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
-  // Dữ liệu mẫu mô phỏng từ Smart Contract
+  // Giải nén params bằng React.use cho Next.js 15+ Client Component
+  const { lang } = React.use(params);
+  const [dict, setDict] = useState(null);
+
+  // Load đa ngôn ngữ ở Client Side
+  useEffect(() => {
+    getDictionary(lang).then(setDict);
+  }, [lang]);
+
+  // Đóng menu khi chuyển trang hoặc đổi tham số id
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [id]);
+
+  if (!dict) {
+    return (
+      <div className="min-h-screen bg-[#f4f7f9] flex items-center justify-center font-sans text-slate-500">
+        Loading...
+      </div>
+    );
+  }
+
+  // NẾU id === 'dashboard', hiển thị trang cá nhân
+  if (id === "dashboard") {
+    return <UserDashboard lang={lang} />;
+  }
+
+  // Dữ liệu mẫu (Giả lập từ Smart Contract)
   const auctions = [
     {
       id: 1,
@@ -54,77 +90,133 @@ export default async function AuctionPage({ params }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f4f7f9] font-sans">
-      {/* Top Navbar màu Navy */}
-      {/* <nav className="bg-[#003366] text-white shadow-md">
-        <div className="max-w-6xl mx-auto px-4 flex justify-between items-center h-14">
-          <div className="flex items-center gap-2 font-semibold text-lg">
-            <Gavel size={24} className="text-slate-300" />
-            <span>U.S. Embassy Online Auction</span>
-          </div>
-          <div className="flex items-center gap-6 text-sm">
-            <button className="flex items-center gap-1 hover:text-slate-300">
-              <Home size={16} /> Home
-            </button>
-            <button className="flex items-center gap-1 hover:text-slate-300">
-              <UserPlus size={16} /> Register
-            </button>
-            <button className="flex items-center gap-1 hover:text-slate-300">
-              <LogIn size={16} /> Login
-            </button>
-          </div>
-
-        </div>
-      </nav> */}
-
-      <nav className="bg-[#003366] text-white shadow-md">
+    <div className="min-h-screen bg-[#f4f7f9] font-sans relative">
+      {/* 1. Top Navbar màu Navy */}
+      <nav className="bg-[#003366] text-white shadow-md sticky top-0 z-[100]">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center h-14">
           {/* Logo */}
           <div className="flex items-center gap-2 font-semibold text-lg">
             <Gavel size={24} className="text-slate-300" />
-            <span>U.S. Embassy Online Auction</span>
+            <span className="truncate max-w-[180px] md:max-w-none">
+              {dict?.nav?.title || "U.S. Embassy Online Auction"}
+            </span>
           </div>
 
-          <div className="flex items-center gap-6 text-sm">
-            {/* Menu điều hướng */}
-            <div className="hidden md:flex items-center gap-6">
-              <button className="flex items-center gap-1 hover:text-slate-300">
-                <Home size={16} /> Home
-              </button>
-              <button className="flex items-center gap-1 hover:text-slate-300">
-                <UserPlus size={16} /> Register
-              </button>
-              <button className="flex items-center gap-1 hover:text-slate-300">
-                <LogIn size={16} /> Login
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-6 text-sm">
+            {/* Chỉ hiển thị Trang chủ nếu id có giá trị (nghĩa là đang ở trang con hoặc dashboard) */}
+            {id && (
+              <Link
+                href={`/${lang}`}
+                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+              >
+                <Home size={16} /> {dict?.nav?.home}
+              </Link>
+            )}
+
+            {/* Chỉ hiển thị "Bảng điều khiển" nếu đã đăng nhập */}
+            {isLoggedIn && (
+              <Link
+                href={`/${lang}?id=dashboard`}
+                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+              >
+                <LayoutDashboard size={16} />
+                <span>{lang === "vi" ? "Bảng điều khiển" : "My Account"}</span>
+              </Link>
+            )}
+
+            {/* <button className="flex items-center gap-1 hover:text-slate-300 transition-colors">
+              <UserPlus size={16} /> {dict?.nav?.register}
+            </button> */}
+            <button
+              onClick={() => setIsLoggedIn(!isLoggedIn)} // Nút giả lập để test
+              className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+            >
+              <LogIn size={16} />{" "}
+              {isLoggedIn
+                ? lang === "vi"
+                  ? "Thoát"
+                  : "Logout"
+                : dict?.nav?.login}
+            </button>
+          </div>
+
+          {/* Hamburger Button (Mobile) */}
+          <button
+            className="md:hidden p-2 text-slate-300 hover:text-white transition-colors"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* 2. Mobile Menu Overlay */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-[#002855] border-t border-blue-900 absolute w-full shadow-2xl animate-in slide-in-from-top duration-200">
+            <div className="flex flex-col p-4 gap-2 text-sm">
+              {id && (
+                <Link
+                  href={`/${lang}`}
+                  className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+                >
+                  <Home size={16} /> {dict?.nav?.home}
+                </Link>
+              )}
+
+              {/* Chỉ hiển thị "Bảng điều khiển" nếu đã đăng nhập */}
+              {isLoggedIn && (
+                <Link
+                  href={`/${lang}?id=dashboard`}
+                  className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+                >
+                  <LayoutDashboard size={16} />
+                  <span>
+                    {lang === "vi" ? "Bảng điều khiển" : "My Account"}
+                  </span>
+                </Link>
+              )}
+
+              <div className="h-[1px] bg-blue-900 my-2"></div>
+
+              {/* <button className="flex items-center gap-3 p-3 hover:bg-[#003366] rounded-sm">
+                <UserPlus size={20} className="text-slate-400" />{" "}
+                {dict?.nav?.register}
+              </button> */}
+              <button
+                onClick={() => setIsLoggedIn(!isLoggedIn)} // Nút giả lập để test
+                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+              >
+                <LogIn size={16} />{" "}
+                {isLoggedIn
+                  ? lang === "vi"
+                    ? "Thoát"
+                    : "Logout"
+                  : dict?.nav?.login}
               </button>
             </div>
           </div>
-        </div>
+        )}
       </nav>
 
-      {/* 2. MỤC LỰA CHỌN NGÔN NGỮ NẰM DƯỚI NAVBAR VÀ CĂN PHẢI */}
+      {/* 3. Lựa chọn ngôn ngữ căn phải */}
       <div className="max-w-6xl mx-auto px-4 py-2 flex justify-end">
         <div className="relative group">
-          <button className="flex items-center gap-1 text-slate-600 text-[13px] hover:text-slate-900 transition-colors">
-            <UserPlus size={14} className="text-slate-500 fill-slate-500" />{" "}
-            {/* Icon người dùng nhỏ */}
-            <span>
-              {lang === "vi" ? "Tiếng Việt" : "English (United States)"}
-            </span>
+          <button className="flex items-center gap-1 text-slate-600 text-[13px] hover:text-slate-900 transition-colors font-medium">
+            <Globe size={14} className="text-slate-500" />
+            <span>{lang === "vi" ? "Tiếng Việt" : "English (US)"}</span>
             <ChevronDown size={12} />
           </button>
 
-          {/* Dropdown Menu */}
-          <div className="absolute right-0 top-full mt-1 w-48 bg-white text-slate-800 shadow-xl rounded-sm border border-slate-200 hidden group-hover:block z-50">
+          <div className="absolute right-0 top-full mt-1 w-44 bg-white text-slate-800 shadow-xl rounded-sm border border-slate-200 hidden group-hover:block z-50 overflow-hidden">
             <Link
               href="/en"
-              className={`block px-4 py-2 text-sm hover:bg-slate-100 border-b border-slate-100 ${lang === "en" ? "font-bold text-blue-700" : ""}`}
+              className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "en" ? "bg-blue-50 text-blue-700 font-bold" : ""}`}
             >
               English (United States)
             </Link>
             <Link
               href="/vi"
-              className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "vi" ? "font-bold text-blue-700" : ""}`}
+              className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "vi" ? "bg-blue-50 text-blue-700 font-bold" : ""}`}
             >
               Tiếng Việt
             </Link>
@@ -134,78 +226,67 @@ export default async function AuctionPage({ params }) {
 
       <main className="max-w-6xl mx-auto my-4 bg-white shadow-sm border border-slate-200 rounded-sm">
         <div className="px-6 py-8">
-          {/* Banner giới thiệu */}
-          <section className="bg-white border border-slate-200 rounded-sm shadow-sm mb-8">
+          {/* Banner */}
+          <section className="bg-white border border-slate-200 rounded-sm shadow-sm mb-8 overflow-hidden">
             <div className="bg-[#004a99] text-white px-4 py-2 font-bold text-lg">
-              U.S. Embassy Online Auction
+              {dict?.banner?.title}
             </div>
             <div className="p-6 flex flex-col md:flex-row gap-6 items-center">
               <div className="flex-1 text-slate-700 text-sm leading-relaxed">
-                <p className="mb-4">
-                  The U.S. Embassies are selling surplus movable property (SMP)
-                  via a Web Based Electronic Auction...
-                </p>
-                <p>
-                  During this period you can actively take part and submit your
-                  bid for the surplus property.
-                </p>
+                <p>{dict?.banner?.description}</p>
               </div>
-              <div className="w-64 h-40 bg-slate-100 rounded flex items-center justify-center overflow-hidden border">
-                <Globe size={80} className="text-blue-200" />
+              <div className="w-48 h-32 bg-slate-50 rounded flex items-center justify-center border border-slate-100 hidden sm:flex">
+                <Globe size={60} className="text-blue-100" />
               </div>
             </div>
           </section>
 
-          {/* Tiêu đề danh sách */}
+          {/* Danh sách đấu giá */}
           <div className="mb-4">
-            <h2 className="text-[#004a99] text-2xl font-light border-b border-blue-200 pb-2">
-              All Auctions
+            <h2 className="text-[#004a99] text-2xl font-light border-b border-blue-200 pb-2 uppercase tracking-tight">
+              {dict?.auction?.all_auctions}
             </h2>
-            <div className="bg-[#d9edf7] text-[#31708f] p-3 text-sm mt-4 rounded-sm border border-[#bce8f1]">
-              Here you can see all available auctions.
-            </div>
           </div>
 
-          {/* Lưới các thẻ Đấu giá */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {auctions.map((item) => (
               <Link
                 key={item.id}
                 href={`/${lang}/pages/auctionDetail?id=${item.id}`}
-                className="block"
+                className="group"
               >
-                <div className="bg-white border border-slate-200 rounded-sm hover:shadow-md transition-shadow cursor-pointer group">
+                <div className="bg-white border border-slate-200 rounded-sm hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer">
                   <div className="flex justify-between items-start p-4">
                     <span className="bg-[#77b300] text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
                       <Gavel size={10} /> {item.status}
                     </span>
-                    <div className="text-right">
-                      <h3 className="text-[#003366] text-xl font-bold group-hover:underline">
+                    <div className="text-right flex-1 px-4">
+                      <h3 className="text-[#003366] text-xl font-bold group-hover:text-blue-700 transition-colors">
                         {item.location}
                       </h3>
-                      <p className="text-[10px] text-slate-500 font-bold mt-1">
-                        SCHEDULED CLOSURE DATE: {item.date}
-                      </p>
-                      <p className="text-[9px] text-blue-500 font-bold tracking-tighter">
-                        GMT+0700 (INDOCHINA TIME)
+                      <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase">
+                        {dict?.auction?.scheduled_date}: {item.date}
                       </p>
                     </div>
-                    <ChevronRight className="text-slate-300 group-hover:text-blue-500" />
+                    <ChevronRight className="text-slate-300 group-hover:translate-x-1 transition-transform" />
                   </div>
 
                   <div className="grid grid-cols-2 border-t border-slate-100 text-center divide-x divide-slate-100">
-                    <div className="py-4">
-                      <p className="text-2xl text-slate-700">{item.lots}</p>
+                    <div className="py-4 bg-slate-50/50">
+                      <p className="text-2xl text-slate-700 font-light">
+                        {item.lots}
+                      </p>
                       <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
-                        <Package size={12} /> Lots in auction
+                        <Package size={12} /> {dict?.auction?.lots_in_auction}
                       </p>
                     </div>
                     <div className="py-4">
-                      <p className="text-2xl text-slate-700">
+                      <p className="text-2xl text-slate-700 font-light">
                         {item.time.split(" ")[0]}
                       </p>
                       <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
-                        <Clock size={12} /> {item.time.split(" ")[1]} to Closure
+                        <Clock size={12} /> {item.time.split(" ")[1]}{" "}
+                        {dict?.auction?.to_closure}
                       </p>
                     </div>
                   </div>
@@ -216,12 +297,12 @@ export default async function AuctionPage({ params }) {
         </div>
       </main>
 
-      {/* Footer / Help Button */}
-      <button className="fixed bottom-6 right-6 bg-[#2c3e50] text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg hover:bg-slate-700 transition-colors">
-        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+      {/* Help Button */}
+      <button className="fixed bottom-6 right-6 bg-[#2c3e50] text-white px-5 py-2.5 rounded-full flex items-center gap-2 shadow-2xl hover:bg-slate-700 transition-all z-40 active:scale-95">
+        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">
           ?
         </span>
-        Help
+        <span className="font-bold text-sm uppercase tracking-wider">Help</span>
       </button>
     </div>
   );
