@@ -1,314 +1,285 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { getDictionary } from "@/lib/get-dictionary";
+import React, { useState } from "react";
 import {
-  ArrowUpRight,
-  Trophy,
-  Wallet,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
   LayoutDashboard,
-  History,
-  ChevronLeft,
+  PlusCircle,
   Package,
+  History,
+  Settings,
+  Gavel,
+  ArrowLeft,
+  Clock,
+  ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
 
-/**
- * Component con: Thẻ thống kê (StatCard)
- */
-const StatCard = ({ title, value, unit, colorClass, icon: Icon }) => (
-  <div
-    className={`bg-white p-5 rounded-sm border border-slate-200 shadow-sm border-t-4 ${colorClass} flex flex-col hover:shadow-md transition-shadow`}
-  >
-    <div className="flex justify-between items-start">
-      <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
-        {title}
-      </span>
-      <Icon size={18} className="text-slate-300" />
-    </div>
-    <div className="mt-2 flex items-baseline gap-2">
-      <span className="text-3xl font-light text-slate-800">{value}</span>
-      <span className="text-xs font-bold text-slate-400 uppercase">{unit}</span>
-    </div>
-  </div>
-);
-
-/**
- * Component con: Dòng lịch sử hoạt động (ActivityItem)
- */
-const ActivityItem = ({ type, status, item, amount, time, dict }) => {
-  const typeConfig = {
-    BID: {
-      icon: <ArrowUpRight size={18} />,
-      bg: "bg-blue-50",
-      text: "text-blue-600",
-      label: dict?.dashboard?.activity?.bid || "Đã đặt giá",
-    },
-    WIN: {
-      icon: <Trophy size={18} />,
-      bg: "bg-green-50",
-      text: "text-green-600",
-      label: dict?.dashboard?.activity?.win || "Thắng đấu giá",
-    },
-  };
-
-  const statusConfig = {
-    SUCCESS: {
-      icon: <CheckCircle2 size={14} />,
-      class: "text-green-600 bg-green-50",
-      label: dict?.dashboard?.status?.success || "Thành công",
-    },
-    OUTBID: {
-      icon: <AlertCircle size={14} />,
-      class: "text-red-600 bg-red-50",
-      label: dict?.dashboard?.status?.outbid || "Bị vượt giá",
-    },
-  };
-
-  const config = typeConfig[type] || typeConfig.BID;
-  const sStyle = statusConfig[status] || {
-    class: "bg-slate-50",
-    label: status,
-  };
-
-  return (
-    <div className="flex items-center justify-between p-4 border border-slate-100 rounded-sm hover:bg-slate-50 transition-colors">
-      <div className="flex items-center gap-4">
-        <div className={`p-2.5 rounded-full ${config.bg} ${config.text}`}>
-          {config.icon}
-        </div>
-        <div>
-          <h4 className="font-bold text-slate-700 text-sm">
-            {config.label}:{" "}
-            <span className="text-[#004a99] uppercase">{item}</span>
-          </h4>
-          <div className="flex items-center mt-1 gap-3 text-[11px] text-slate-400 font-medium">
-            <span>{time}</span>
-            <span className="w-1 h-1 bg-slate-200 rounded-full"></span>
-            <span className="font-bold text-slate-600">{amount}</span>
-          </div>
-        </div>
-      </div>
-      <div
-        className={`flex items-center px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-tighter ${sStyle.class}`}
-      >
-        {sStyle.icon}
-        <span className="ml-1">{sStyle.label}</span>
-      </div>
-    </div>
-  );
-};
+// Import các component con
+import Overview from "./Overview";
+import CreateAuctionForm from "./CreateAuctionForm";
+import MyAuctionDetail from "./MyAuctionDetail";
+import MyBidDetail from "./MyBidDetail";
+import SettingsForm from "./SettingsForm";
 
 export default function UserDashboard({ lang }) {
-  const [dict, setDict] = useState(null);
+  // Trạng thái điều hướng
+  const [activeTab, setActiveTab] = useState("overview"); // overview, my-auctions, history, settings
+  const [viewMode, setViewMode] = useState("list"); // list, create, auction-detail, bid-detail
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  // 1. LOGIC LẤY TÊN NGƯỜI DÙNG
-  // Trong thực tế, 'userName' sẽ được lấy từ Global State (Redux/Context) hoặc từ Wallet Profile.
-  const [userData, setUserData] = useState({
-    fullName: "Vu Tuan Anh", // Giả sử đây là dữ liệu lấy từ DB hoặc Wallet
-    role: "User Account",
-  });
+  // Thống kê giả lập
+  const stats = [
+    {
+      label: lang === "vi" ? "Đang đấu giá" : "Active Bids",
+      value: 3,
+      icon: <Gavel size={20} />,
+    },
+    {
+      label: lang === "vi" ? "Đã trúng thầu" : "Won Items",
+      value: 1,
+      icon: <Package size={20} />,
+    },
+    {
+      label: lang === "vi" ? "Số dư ký quỹ" : "Escrow Balance",
+      value: "450 BBD",
+      icon: <ShieldCheck size={20} />,
+    },
+  ];
 
-  // Hàm xử lý hiển thị Avatar (Lấy các chữ cái đầu: "Vu Tuan Anh" -> "VA")
-  const getAvatarName = (name) => {
-    if (!name) return "U";
-    const words = name.split(" ");
-    if (words.length >= 2) {
-      return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-    }
-    return name[0].toUpperCase();
+  // Hàm quay lại danh sách
+  const handleBack = () => {
+    setViewMode("list");
+    setSelectedItem(null);
   };
 
-  useEffect(() => {
-    getDictionary(lang).then(setDict);
-  }, [lang]);
+  // Render nội dung chính
+  const renderMainContent = () => {
+    // Chế độ tạo mới
+    if (viewMode === "create") {
+      return <CreateAuctionForm lang={lang} onCancel={handleBack} />;
+    }
 
-  if (!dict) return null;
+    // Chế độ chi tiết lô hàng (người bán)
+    if (viewMode === "auction-detail") {
+      return (
+        <MyAuctionDetail data={selectedItem} lang={lang} onBack={handleBack} />
+      );
+    }
+
+    // Chế độ chi tiết trả giá (người mua)
+    if (viewMode === "bid-detail") {
+      return (
+        <MyBidDetail data={selectedItem} lang={lang} onBack={handleBack} />
+      );
+    }
+
+    // Chế độ danh sách mặc định (Tabs)
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Sidebar Tabs */}
+        <aside className="lg:col-span-3 space-y-1">
+          {[
+            {
+              id: "overview",
+              label: lang === "vi" ? "Tổng quan" : "Overview",
+              icon: <LayoutDashboard size={18} />,
+            },
+            {
+              id: "my-auctions",
+              label: lang === "vi" ? "Đấu giá của tôi" : "My Auctions",
+              icon: <Package size={18} />,
+            },
+            {
+              id: "history",
+              label: lang === "vi" ? "Lịch sử trả giá" : "Bid History",
+              icon: <History size={18} />,
+            },
+            {
+              id: "settings",
+              label: lang === "vi" ? "Cài đặt" : "Settings",
+              icon: <Settings size={18} />,
+            },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider transition-all rounded-sm ${activeTab === tab.id ? "bg-[#003366] text-white shadow-md" : "text-slate-500 hover:bg-slate-100"}`}
+            >
+              {tab.icon} {tab.label}
+            </button>
+          ))}
+        </aside>
+
+        {/* Tab Content Area */}
+        <div className="lg:col-span-9">
+          <div className="bg-white border border-slate-200 rounded-sm shadow-sm p-6">
+            <h2 className="font-bold text-[#003366] uppercase tracking-tight border-b border-slate-100 pb-4 mb-6">
+              {activeTab === "overview" &&
+                (lang === "vi" ? "Tổng quan hoạt động" : "Activity Overview")}
+              {activeTab === "my-auctions" &&
+                (lang === "vi"
+                  ? "Lô hàng bạn đang đăng bán"
+                  : "My Selling Lots")}
+              {activeTab === "history" &&
+                (lang === "vi"
+                  ? "Các lô hàng bạn đang đấu giá"
+                  : "Your Bidding History")}
+              {activeTab === "settings" &&
+                (lang === "vi" ? "Thiết lập tài khoản" : "Account Settings")}
+            </h2>
+
+            <div className="space-y-4">
+              {/* COMPONENT TỔNG QUAN */}
+              {activeTab === "overview" && (
+                <Overview
+                  lang={lang}
+                  setActiveTab={setActiveTab}
+                  setViewMode={setViewMode}
+                  setSelectedItem={setSelectedItem}
+                />
+              )}
+
+              {/* TAB ĐẤU GIÁ CỦA TÔI (Người bán) */}
+              {activeTab === "my-auctions" && (
+                <div className="group border border-slate-100 p-4 hover:border-blue-300 transition-all rounded-sm flex justify-between items-center">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-16 h-16 bg-slate-100 rounded flex items-center justify-center text-slate-400 font-bold text-[10px]">
+                      IMAGE
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-sm uppercase">
+                        Lô thiết bị văn phòng #04
+                      </h4>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Trạng thái:{" "}
+                        <span className="text-green-600 font-bold uppercase tracking-tighter">
+                          Đang đấu giá
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setViewMode("auction-detail");
+                      setSelectedItem({
+                        title: "Lô thiết bị văn phòng #04",
+                        currentPrice: 500,
+                      });
+                    }}
+                    className="text-[11px] font-bold text-blue-600 hover:underline uppercase flex items-center gap-1"
+                  >
+                    {lang === "vi" ? "Quản lý" : "Manage"}{" "}
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              )}
+
+              {/* TAB LỊCH SỬ TRẢ GIÁ (Người mua) */}
+              {activeTab === "history" && (
+                <div className="group border border-slate-100 p-4 hover:border-red-300 transition-all rounded-sm flex justify-between items-center">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-16 h-16 bg-slate-100 rounded flex items-center justify-center text-slate-400 font-bold text-[10px]">
+                      IMAGE
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-sm uppercase">
+                        Màn hình Dell Ultrasharp
+                      </h4>
+                      <p className="text-[10px] text-red-500 mt-1 font-bold uppercase tracking-tighter italic">
+                        ! Bạn đã bị vượt mức giá
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setViewMode("bid-detail");
+                      setSelectedItem({
+                        id: "4",
+                        title: "Màn hình Dell Ultrasharp",
+                        startingPrice: 100,
+                        myLastBid: 180,
+                        currentPrice: 210,
+                        history: [
+                          { amount: 180, time: "10:00" },
+                          { amount: 150, time: "09:00" },
+                        ],
+                      });
+                    }}
+                    className="text-[11px] font-bold text-red-600 hover:underline uppercase flex items-center gap-1"
+                  >
+                    {lang === "vi" ? "Kiểm tra" : "Check Bid"}{" "}
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              )}
+
+              {activeTab === "settings" && <SettingsForm lang={lang} />}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-[#f4f7f9] font-sans">
-      {/* 1. Header Navigation */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Link
-              href={`/${lang}`}
-              className="flex items-center gap-1 text-slate-600 hover:text-[#004a99] font-bold text-[12px] border border-slate-300 px-3 py-1.5 rounded-sm hover:bg-slate-50 transition-colors uppercase tracking-tight"
-            >
-              <ChevronLeft size={16} />
-              {lang === "vi" ? "Quay lại" : "Back"}
-            </Link>
-            <div className="h-6 w-[1px] bg-slate-200 hidden sm:block"></div>
-            <h1 className="text-[#003366] font-bold text-lg flex items-center gap-2">
-              <LayoutDashboard size={20} className="text-blue-500" />
-              <span className="uppercase tracking-tight text-sm">
-                {lang === "vi" ? "Bảng điều khiển" : "Dashboard"}
-              </span>
-            </h1>
-          </div>
+    <div className="min-h-screen bg-[#f4f7f9] font-sans pb-20">
+      {/* Header */}
+      <div className="bg-[#003366] text-white pt-8 pb-12 shadow-inner">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <Link
+                href={`/${lang}`}
+                className="text-blue-300 hover:text-white flex items-center gap-1 text-xs mb-4 transition-colors"
+              >
+                <ArrowLeft size={14} />{" "}
+                {lang === "vi" ? "Quay lại trang chủ" : "Back to Home"}
+              </Link>
+              <h1 className="text-3xl font-light tracking-tight uppercase tracking-widest">
+                {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
+              </h1>
+            </div>
 
-          {/* <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block leading-none">
-              <p className="text-[9px] text-slate-400 font-bold uppercase mb-1">
-                User Account
-              </p>
-              <p className="text-sm font-bold text-slate-700 uppercase">
-                Vu Tuan Anh
-              </p>
-            </div>
-            <div className="w-9 h-9 bg-[#003366] text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md">
-              VA
-            </div>
-          </div> */}
-
-          {/* LOGIC HIỂN THỊ TÊN TỰ ĐỘNG */}
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block leading-none">
-              <p className="text-[9px] text-slate-400 font-bold uppercase mb-1">
-                {userData.role}
-              </p>
-              <p className="text-sm font-bold text-slate-700 uppercase">
-                {userData.fullName}
-              </p>
-            </div>
-            {/* Avatar tự động lấy chữ cái đầu */}
-            <div className="w-9 h-9 bg-[#003366] text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-white">
-              {getAvatarName(userData.fullName)}
-            </div>
+            {viewMode === "list" && (
+              <button
+                onClick={() => setViewMode("create")}
+                className="bg-[#77b300] hover:bg-[#669900] text-white px-6 py-3 rounded-sm font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95 uppercase tracking-wider text-sm"
+              >
+                <PlusCircle size={20} />
+                {lang === "vi" ? "Tạo phiên đấu giá mới" : "Create New Auction"}
+              </button>
+            )}
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* 2. Main Content với nền trắng */}
-      <main className="max-w-6xl mx-auto my-6 md:my-10 bg-white border border-slate-200 shadow-sm rounded-sm overflow-hidden">
-        {/* Nội dung bên trong được bọc padding để không sát mép nền trắng */}
-        <div className="p-6 md:p-10 space-y-12">
-          {/* Section 1: Thống kê nhanh */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard
-              title={lang === "vi" ? "Đang đấu giá" : "Active Bids"}
-              value="03"
-              unit={lang === "vi" ? "Sản phẩm" : "Items"}
-              colorClass="border-t-blue-500"
-              icon={Package}
-            />
-            <StatCard
-              title={lang === "vi" ? "Đã chiến thắng" : "Auctions Won"}
-              value="01"
-              unit={lang === "vi" ? "Sản phẩm" : "Items"}
-              colorClass="border-t-green-500"
-              icon={Trophy}
-            />
-            <StatCard
-              title={lang === "vi" ? "Tổng giá trị" : "Total Value"}
-              value="2.50"
-              unit="BBD"
-              colorClass="border-t-purple-500"
-              icon={Wallet}
-            />
-          </div>
-
-          {/* Section 2: Đấu giá đang tham gia */}
-          <section>
-            <h2 className="text-[#003366] text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Clock size={16} className="text-blue-500" />
-              {lang === "vi"
-                ? "Đấu giá đang tham gia"
-                : "Current Bidding Items"}
-            </h2>
-            <div className="border border-slate-100 rounded-sm overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm border-collapse">
-                  <thead className="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-widest border-b border-slate-200">
-                    <tr>
-                      <th className="px-6 py-4">
-                        {lang === "vi" ? "Vật phẩm" : "Item Name"}
-                      </th>
-                      <th className="px-6 py-4">
-                        {lang === "vi" ? "Giá hiện tại" : "Current Price"}
-                      </th>
-                      <th className="px-6 py-4">
-                        {lang === "vi" ? "Trạng thái" : "Status"}
-                      </th>
-                      <th className="px-6 py-4 text-right">
-                        {lang === "vi" ? "Hành động" : "Action"}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    <tr className="hover:bg-blue-50/30 transition-colors">
-                      <td className="px-6 py-4 font-bold text-slate-700 uppercase tracking-tighter">
-                        CPU'S & MONITORS
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-800">
-                        210.00{" "}
-                        <span className="text-[10px] text-slate-400">BBD</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-600 rounded-sm text-[10px] font-bold uppercase tracking-tighter">
-                          <AlertCircle size={10} />
-                          {lang === "vi" ? "Bị vượt giá" : "Outbid"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="bg-[#004a99] text-white px-4 py-1.5 rounded-sm text-[11px] font-bold hover:bg-blue-800 transition-all uppercase shadow-sm">
-                          {lang === "vi" ? "Nâng giá ngay" : "Raise Bid"}
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+      <main className="max-w-6xl mx-auto px-4 -mt-8">
+        {/* Stats bar */}
+        {viewMode === "list" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {stats.map((stat, i) => (
+              <div
+                key={i}
+                className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm flex items-center justify-between"
+              >
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    {stat.label}
+                  </p>
+                  <p className="text-2xl font-black text-[#003366]">
+                    {stat.value}
+                  </p>
+                </div>
+                <div className="text-blue-100">{stat.icon}</div>
               </div>
-            </div>
-          </section>
+            ))}
+          </div>
+        )}
 
-          {/* Section 3: Lịch sử hoạt động */}
-          <section className="pb-4">
-            <h2 className="text-[#003366] text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
-              <History size={16} className="text-blue-500" />
-              {lang === "vi" ? "Hoạt động gần đây" : "Recent Activity"}
-            </h2>
-            <div className="space-y-3">
-              <ActivityItem
-                type="BID"
-                status="OUTBID"
-                item="CPU'S & MONITORS"
-                amount="210.00 BBD"
-                time={lang === "vi" ? "15 phút trước" : "15 mins ago"}
-                dict={dict}
-              />
-              <ActivityItem
-                type="WIN"
-                status="SUCCESS"
-                item="Office Furniture Set"
-                amount="85.00 BBD"
-                time={lang === "vi" ? "2 ngày trước" : "2 days ago"}
-                dict={dict}
-              />
-            </div>
-          </section>
-        </div>
+        {/* Main Content Area */}
+        {renderMainContent()}
       </main>
-
-      {/* 3. Footer / Help Button */}
-      <footer className="max-w-6xl mx-auto pb-10 text-center space-y-2">
-        <div className="flex items-center justify-center gap-2 text-slate-400 text-xs">
-          <span>Online Auction, powered by</span>
-          <span className="font-bold text-blue-900/50 italic text-sm">
-            adgCloud
-          </span>
-        </div>
-      </footer>
-
-      <button className="fixed bottom-6 right-6 bg-[#2c3e50] text-white px-5 py-2.5 rounded-full flex items-center gap-2 shadow-2xl hover:bg-slate-700 transition-all z-50">
-        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">
-          ?
-        </span>
-        <span className="font-bold text-sm uppercase tracking-wider">Help</span>
-      </button>
     </div>
   );
 }

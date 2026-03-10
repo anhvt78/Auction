@@ -114,14 +114,16 @@ export default function AuctionPage({ params }) {
               </Link>
             )}
 
-            {/* Chỉ hiển thị "Bảng điều khiển" nếu đã đăng nhập */}
+            {/* Chỉ hiển thị "Tài khoản của tôi" nếu đã đăng nhập */}
             {isLoggedIn && (
               <Link
                 href={`/${lang}?id=dashboard`}
                 className="flex items-center gap-1 hover:text-slate-300 transition-colors"
               >
                 <LayoutDashboard size={16} />
-                <span>{lang === "vi" ? "Bảng điều khiển" : "My Account"}</span>
+                <span>
+                  {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
+                </span>
               </Link>
             )}
 
@@ -163,7 +165,7 @@ export default function AuctionPage({ params }) {
                 </Link>
               )}
 
-              {/* Chỉ hiển thị "Bảng điều khiển" nếu đã đăng nhập */}
+              {/* Chỉ hiển thị "Tài khoản của tôi" nếu đã đăng nhập */}
               {isLoggedIn && (
                 <Link
                   href={`/${lang}?id=dashboard`}
@@ -171,7 +173,7 @@ export default function AuctionPage({ params }) {
                 >
                   <LayoutDashboard size={16} />
                   <span>
-                    {lang === "vi" ? "Bảng điều khiển" : "My Account"}
+                    {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
                   </span>
                 </Link>
               )}
