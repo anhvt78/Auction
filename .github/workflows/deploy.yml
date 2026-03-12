@@ -21,7 +21,8 @@ jobs:
           node-version: "20"
           cache: "npm"
       - name: Install dependencies
-        run: npm install
+        # Sử dụng --legacy-peer-deps để bỏ qua xung đột phiên bản giữa RainbowKit và Wagmi
+        run: npm ci --legacy-peer-deps
       - name: Build with Next.js
         run: npx next build
       - name: Upload artifact
