@@ -25,7 +25,6 @@ function AuctionDetailContent({ params }) {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  // Giải nén params bằng React.use cho Next.js 15+
   const { lang } = React.use(params);
   const [dict, setDict] = useState(null);
 
