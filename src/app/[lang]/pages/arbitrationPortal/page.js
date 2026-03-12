@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, Suspense } from "react"; // Thêm Suspense để dự phòng cho các logic Client sau này
 import {
   Gavel,
   ShieldAlert,
@@ -13,8 +14,10 @@ import {
 } from "lucide-react";
 import ViolationManagement from "@/components/arbitration/ViolationManagement";
 
-export default function ArbitrationPortalPage({ params }) {
-  const { lang } = params;
+// 1. Component chứa logic chính của trang
+function ArbitrationPortalContent({ params }) {
+  // Giải nén params bằng React.use() để đảm bảo tương thích với Next.js 15+
+  const { lang } = React.use(params);
   const [activeTab, setActiveTab] = useState("active-cases");
 
   // Thống kê dành riêng cho thực thể Trọng tài
@@ -165,5 +168,20 @@ export default function ArbitrationPortalPage({ params }) {
         </div>
       </main>
     </div>
+  );
+}
+
+// 2. Export mặc định bao bọc bởi Suspense
+export default function ArbitrationPortalPage({ params }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans text-xs uppercase tracking-widest text-slate-400">
+          Loading Portal...
+        </div>
+      }
+    >
+      <ArbitrationPortalContent params={params} />
+    </Suspense>
   );
 }

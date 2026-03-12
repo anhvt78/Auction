@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getDictionary } from "@/lib/get-dictionary";
@@ -8,7 +8,6 @@ import UserDashboard from "@/components/UserDashboard";
 import {
   Gavel,
   Home,
-  UserPlus,
   LogIn,
   Globe,
   Package,
@@ -18,29 +17,28 @@ import {
   Menu,
   X,
   LayoutDashboard,
-  ShieldCheck,
   Scale,
 } from "lucide-react";
 
-export default function AuctionPage({ params }) {
+// Component chứa nội dung chính của trang
+function AuctionContent({ params }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-
-  // Giải nén params bằng React.use cho Next.js 15+ Client Component
+  
+  // Giải nén params bằng React.use cho Next.js 15+
   const { lang } = React.use(params);
   const [dict, setDict] = useState(null);
 
-  // Load đa ngôn ngữ ở Client Side
   useEffect(() => {
     getDictionary(lang).then(setDict);
   }, [lang]);
 
-  // Đóng menu khi chuyển trang hoặc đổi tham số id
-  useEffect(() => {
+  // Hàm xử lý đóng menu khi nhấn vào link điều hướng
+  const handleNavigation = () => {
     setIsMenuOpen(false);
-  }, [id]);
+  };
 
   if (!dict) {
     return (
@@ -50,7 +48,7 @@ export default function AuctionPage({ params }) {
     );
   }
 
-  // NẾU id === 'dashboard', hiển thị trang cá nhân
+  // Chuyển đổi hiển thị giữa Dashboard và Danh sách đấu giá
   if (id === "dashboard") {
     return <UserDashboard lang={lang} />;
   }
@@ -81,22 +79,13 @@ export default function AuctionPage({ params }) {
       time: "6 Days",
       status: "ACTIVE",
     },
-    {
-      id: 4,
-      location: "Bridgetown, BB",
-      date: "MARCH 9, 2026, 23:00",
-      lots: 62,
-      time: "6 Hours",
-      status: "ACTIVE",
-    },
   ];
 
   return (
     <div className="min-h-screen bg-[#f4f7f9] font-sans relative">
-      {/* 1. Top Navbar màu Navy */}
+      {/* 1. Top Navbar */}
       <nav className="bg-[#003366] text-white shadow-md sticky top-0 z-[100]">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center h-14">
-          {/* Logo */}
           <div className="flex items-center gap-2 font-semibold text-lg">
             <Gavel size={24} className="text-slate-300" />
             <span className="truncate max-w-[180px] md:max-w-none">
@@ -106,200 +95,121 @@ export default function AuctionPage({ params }) {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-6 text-sm">
-            {/* Chỉ hiển thị Trang chủ nếu id có giá trị (nghĩa là đang ở trang con hoặc dashboard) */}
             {id && (
               <Link
                 href={`/${lang}`}
+                onClick={handleNavigation}
                 className="flex items-center gap-1 hover:text-slate-300 transition-colors"
               >
                 <Home size={16} /> {dict?.nav?.home}
               </Link>
             )}
 
-            {/* Chỉ hiển thị "Tài khoản của tôi" nếu đã đăng nhập */}
             {isLoggedIn && (
               <Link
                 href={`/${lang}?id=dashboard`}
+                onClick={handleNavigation}
                 className="flex items-center gap-1 hover:text-slate-300 transition-colors"
               >
                 <LayoutDashboard size={16} />
-                <span>
-                  {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
-                </span>
+                <span>{lang === "vi" ? "Tài khoản của tôi" : "My Account"}</span>
               </Link>
             )}
 
             <Link
               href={`/${lang}/pages/arbitrationPortal`}
+              onClick={handleNavigation}
               className="flex items-center gap-1 hover:text-slate-300 transition-colors"
             >
               <Scale size={16} />
               {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
             </Link>
 
-            {/* <button className="flex items-center gap-1 hover:text-slate-300 transition-colors">
-              <UserPlus size={16} /> {dict?.nav?.register}
-            </button> */}
             <button
-              onClick={() => setIsLoggedIn(!isLoggedIn)} // Nút giả lập để test
+              onClick={() => { setIsLoggedIn(!isLoggedIn); handleNavigation(); }}
               className="flex items-center gap-1 hover:text-slate-300 transition-colors"
             >
-              <LogIn size={16} />{" "}
-              {isLoggedIn
-                ? lang === "vi"
-                  ? "Thoát"
-                  : "Logout"
-                : dict?.nav?.login}
+              <LogIn size={16} />
+              {isLoggedIn ? (lang === "vi" ? "Thoát" : "Logout") : dict?.nav?.login}
             </button>
           </div>
 
-          {/* Hamburger Button (Mobile) */}
+          {/* Hamburger Button */}
           <button
-            className="md:hidden p-2 text-slate-300 hover:text-white transition-colors"
+            className="md:hidden p-2 text-slate-300 hover:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* 2. Mobile Menu Overlay */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-[#002855] border-t border-blue-900 absolute w-full shadow-2xl animate-in slide-in-from-top duration-200">
-            <div className="flex flex-col p-4 gap-2 text-sm">
-              {id && (
-                <Link
-                  href={`/${lang}`}
-                  className="flex items-center gap-1 hover:text-slate-300 transition-colors"
-                >
-                  <Home size={16} /> {dict?.nav?.home}
-                </Link>
-              )}
-
-              {/* Chỉ hiển thị "Tài khoản của tôi" nếu đã đăng nhập */}
-              {isLoggedIn && (
-                <Link
-                  href={`/${lang}?id=dashboard`}
-                  className="flex items-center gap-1 hover:text-slate-300 transition-colors"
-                >
-                  <LayoutDashboard size={16} />
-                  <span>
-                    {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
-                  </span>
-                </Link>
-              )}
-
-              <div className="h-[1px] bg-blue-900 my-2"></div>
-
-              {/* <button className="flex items-center gap-3 p-3 hover:bg-[#003366] rounded-sm">
-                <UserPlus size={20} className="text-slate-400" />{" "}
-                {dict?.nav?.register}
-              </button> */}
-              <button
-                onClick={() => setIsLoggedIn(!isLoggedIn)} // Nút giả lập để test
-                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
-              >
-                <LogIn size={16} />{" "}
-                {isLoggedIn
-                  ? lang === "vi"
-                    ? "Thoát"
-                    : "Logout"
-                  : dict?.nav?.login}
-              </button>
-            </div>
+          <div className="md:hidden bg-[#002855] border-t border-blue-900 absolute w-full shadow-2xl p-4 flex flex-col gap-2 text-sm">
+            {id && (
+              <Link href={`/${lang}`} onClick={handleNavigation} className="flex items-center gap-2 p-2">
+                <Home size={18} /> {dict?.nav?.home}
+              </Link>
+            )}
+            <Link href={`/${lang}/pages/arbitrationPortal`} onClick={handleNavigation} className="flex items-center gap-2 p-2">
+              <Scale size={18} /> {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
+            </Link>
+            <button onClick={() => { setIsLoggedIn(!isLoggedIn); handleNavigation(); }} className="flex items-center gap-2 p-2">
+              <LogIn size={18} /> {isLoggedIn ? (lang === "vi" ? "Thoát" : "Logout") : dict?.nav?.login}
+            </button>
           </div>
         )}
       </nav>
 
-      {/* 3. Lựa chọn ngôn ngữ căn phải */}
+      {/* 2. Language Selector */}
       <div className="max-w-6xl mx-auto px-4 py-2 flex justify-end">
         <div className="relative group">
-          <button className="flex items-center gap-1 text-slate-600 text-[13px] hover:text-slate-900 transition-colors font-medium">
-            <Globe size={14} className="text-slate-500" />
+          <button className="flex items-center gap-1 text-slate-600 text-[13px] font-medium hover:text-slate-900">
+            <Globe size={14} />
             <span>{lang === "vi" ? "Tiếng Việt" : "English (US)"}</span>
             <ChevronDown size={12} />
           </button>
-
-          <div className="absolute right-0 top-full mt-1 w-44 bg-white text-slate-800 shadow-xl rounded-sm border border-slate-200 hidden group-hover:block z-50 overflow-hidden">
-            <Link
-              href="/en"
-              className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "en" ? "bg-blue-50 text-blue-700 font-bold" : ""}`}
-            >
-              English (United States)
-            </Link>
-            <Link
-              href="/vi"
-              className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "vi" ? "bg-blue-50 text-blue-700 font-bold" : ""}`}
-            >
-              Tiếng Việt
-            </Link>
+          <div className="absolute right-0 top-full mt-1 w-44 bg-white shadow-xl border border-slate-200 hidden group-hover:block z-50">
+            <Link href="/en" className="block px-4 py-2 text-sm hover:bg-slate-100">English (US)</Link>
+            <Link href="/vi" className="block px-4 py-2 text-sm hover:bg-slate-100">Tiếng Việt</Link>
           </div>
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto my-4 bg-white shadow-sm border border-slate-200 rounded-sm">
+      {/* 3. Main Content */}
+      <main className="max-w-6xl mx-auto my-4 bg-white shadow-sm border border-slate-200 rounded-sm overflow-hidden">
         <div className="px-6 py-8">
-          {/* Banner */}
-          <section className="bg-white border border-slate-200 rounded-sm shadow-sm mb-8 overflow-hidden">
-            <div className="bg-[#004a99] text-white px-4 py-2 font-bold text-lg">
-              {dict?.banner?.title}
-            </div>
-            <div className="p-6 flex flex-col md:flex-row gap-6 items-center">
-              <div className="flex-1 text-slate-700 text-sm leading-relaxed">
-                <p>{dict?.banner?.description}</p>
-              </div>
-              <div className="w-48 h-32 bg-slate-50 rounded flex items-center justify-center border border-slate-100 hidden sm:flex">
-                <Globe size={60} className="text-blue-100" />
-              </div>
-            </div>
+          <section className="bg-white border border-slate-200 mb-8 overflow-hidden">
+            <div className="bg-[#004a99] text-white px-4 py-2 font-bold">{dict?.banner?.title}</div>
+            <div className="p-6 text-sm text-slate-700 leading-relaxed">{dict?.banner?.description}</div>
           </section>
 
-          {/* Danh sách đấu giá */}
-          <div className="mb-4">
-            <h2 className="text-[#004a99] text-2xl font-light border-b border-blue-200 pb-2 uppercase tracking-tight">
-              {dict?.auction?.all_auctions}
-            </h2>
-          </div>
+          <h2 className="text-[#004a99] text-2xl font-light border-b border-blue-200 pb-2 mb-6 uppercase">
+            {dict?.auction?.all_auctions}
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {auctions.map((item) => (
-              <Link
-                key={item.id}
-                href={`/${lang}/pages/auctionDetail?id=${item.id}`}
-                className="group"
-              >
-                <div className="bg-white border border-slate-200 rounded-sm hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer">
-                  <div className="flex justify-between items-start p-4">
-                    <span className="bg-[#77b300] text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
+              <Link key={item.id} href={`/${lang}/pages/auctionDetail?id=${item.id}`} className="group">
+                <div className="bg-white border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all">
+                  <div className="flex justify-between p-4">
+                    <span className="bg-[#77b300] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase flex items-center gap-1">
                       <Gavel size={10} /> {item.status}
                     </span>
-                    <div className="text-right flex-1 px-4">
-                      <h3 className="text-[#003366] text-xl font-bold group-hover:text-blue-700 transition-colors">
-                        {item.location}
-                      </h3>
-                      <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase">
-                        {dict?.auction?.scheduled_date}: {item.date}
-                      </p>
+                    <div className="text-right px-4">
+                      <h3 className="text-[#003366] text-xl font-bold group-hover:text-blue-700">{item.location}</h3>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">{item.date}</p>
                     </div>
                     <ChevronRight className="text-slate-300 group-hover:translate-x-1 transition-transform" />
                   </div>
-
                   <div className="grid grid-cols-2 border-t border-slate-100 text-center divide-x divide-slate-100">
                     <div className="py-4 bg-slate-50/50">
-                      <p className="text-2xl text-slate-700 font-light">
-                        {item.lots}
-                      </p>
-                      <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
-                        <Package size={12} /> {dict?.auction?.lots_in_auction}
-                      </p>
+                      <p className="text-2xl text-slate-700 font-light">{item.lots}</p>
+                      <p className="text-[10px] uppercase text-slate-500 font-bold">{dict?.auction?.lots_in_auction}</p>
                     </div>
                     <div className="py-4">
-                      <p className="text-2xl text-slate-700 font-light">
-                        {item.time.split(" ")[0]}
-                      </p>
-                      <p className="text-[10px] uppercase text-slate-500 font-bold flex items-center justify-center gap-1">
-                        <Clock size={12} /> {item.time.split(" ")[1]}{" "}
-                        {dict?.auction?.to_closure}
-                      </p>
+                      <p className="text-2xl text-slate-700 font-light">{item.time.split(" ")[0]}</p>
+                      <p className="text-[10px] uppercase text-slate-500 font-bold">{item.time.split(" ")[1]} {dict?.auction?.to_closure}</p>
                     </div>
                   </div>
                 </div>
@@ -310,12 +220,19 @@ export default function AuctionPage({ params }) {
       </main>
 
       {/* Help Button */}
-      <button className="fixed bottom-6 right-6 bg-[#2c3e50] text-white px-5 py-2.5 rounded-full flex items-center gap-2 shadow-2xl hover:bg-slate-700 transition-all z-40 active:scale-95">
-        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">
-          ?
-        </span>
+      <button className="fixed bottom-6 right-6 bg-[#2c3e50] text-white px-5 py-2.5 rounded-full flex items-center gap-2 shadow-2xl hover:bg-slate-700 z-40 transition-all">
+        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">?</span>
         <span className="font-bold text-sm uppercase tracking-wider">Help</span>
       </button>
     </div>
+  );
+}
+
+// Export mặc định được bao bọc bởi Suspense để vượt qua kiểm tra build
+export default function AuctionPage({ params }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-slate-500">Loading Application...</div>}>
+      <AuctionContent params={params} />
+    </Suspense>
   );
 }

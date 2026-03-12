@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react"; // Thêm Suspense để bọc nội dung Client
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getDictionary } from "@/lib/get-dictionary";
@@ -15,16 +15,17 @@ import {
   History,
   User,
   Package,
-  List,
-  Camera,
-  ShieldCheck,
   Truck,
+  ShieldCheck,
   ShieldAlert,
 } from "lucide-react";
 
-export default function AuctionDetailPage({ params }) {
+// 1. Tạo component con để sử dụng các Hook phụ thuộc vào Browser (như useSearchParams)
+function AuctionDetailContent({ params }) {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+
+  // Giải nén params bằng React.use cho Next.js 15+
   const { lang } = React.use(params);
   const [dict, setDict] = useState(null);
 
@@ -40,10 +41,9 @@ export default function AuctionDetailPage({ params }) {
     endTime: "2026-03-15 18:00",
     description:
       "Lô hàng bao gồm 10 màn hình Dell 24 inch và 5 thùng máy CPU HP. Đã được kiểm tra ngoại quan.",
-    // --- THÔNG TIN BỔ SUNG MỚI ---
     shippingInfo: {
-      dispatchTime: "48 giờ", // Thời gian chuẩn bị hàng sau khi thanh toán
-      deliveryTime: "3 - 5 ngày làm việc", // Thời gian vận chuyển dự kiến
+      dispatchTime: "48 giờ",
+      deliveryTime: "3 - 5 ngày làm việc",
       carrier: "Giao Hàng Nhanh (GHN)",
     },
     mediator: {
@@ -52,7 +52,6 @@ export default function AuctionDetailPage({ params }) {
       description:
         "Đảm bảo giữ tiền ký quỹ và giải quyết tranh chấp về tình trạng hàng hóa.",
     },
-    // ----------------------------
     specs: [
       { key: "Thương hiệu", value: "Dell / HP" },
       { key: "Năm sản xuất", value: "2021" },
@@ -104,7 +103,12 @@ export default function AuctionDetailPage({ params }) {
     }, 2000);
   };
 
-  if (!dict) return null;
+  if (!dict)
+    return (
+      <div className="flex min-h-screen items-center justify-center font-sans text-slate-400 uppercase text-[10px] tracking-widest">
+        Loading...
+      </div>
+    );
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f4f7f9] font-sans">
@@ -132,9 +136,7 @@ export default function AuctionDetailPage({ params }) {
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* CỘT TRÁI (7/12): Ảnh, Mô tả, Vận chuyển, Trung gian */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Thư viện ảnh */}
               <div className="bg-white p-2 rounded-sm border border-slate-200 shadow-sm">
                 <div className="aspect-video bg-slate-100 rounded-sm overflow-hidden flex items-center justify-center">
                   <img
@@ -150,15 +152,17 @@ export default function AuctionDetailPage({ params }) {
                       onClick={() => setActiveImg(idx)}
                       className={`w-20 h-16 border-2 rounded-sm overflow-hidden ${activeImg === idx ? "border-[#3498db]" : "border-transparent opacity-60"}`}
                     >
-                      <img src={img} className="w-full h-full object-cover" />
+                      <img
+                        src={img}
+                        className="w-full h-full object-cover"
+                        alt="thumb"
+                      />
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* KHỐI THÔNG TIN VẬN CHUYỂN & TRUNG GIAN */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Vận chuyển */}
                 <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
                   <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2 text-[#003366]">
                     <Truck size={16} />
@@ -182,12 +186,11 @@ export default function AuctionDetailPage({ params }) {
                       </span>
                     </div>
                     <p className="text-[10px] text-slate-400 italic mt-2">
-                      * Sau khi người mua hoàn tất thủ tục thanh toán và ký quỹ.
+                      * Sau thanh toán và ký quỹ.
                     </p>
                   </div>
                 </div>
 
-                {/* Trung gian giải quyết tranh chấp */}
                 <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
                   <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2 text-green-700">
                     <ShieldCheck size={16} />
@@ -202,14 +205,10 @@ export default function AuctionDetailPage({ params }) {
                     <p className="text-[11px] text-slate-500 leading-relaxed">
                       {auctionData.mediator.description}
                     </p>
-                    <div className="mt-3 flex items-center gap-1 text-[10px] text-green-600 font-bold uppercase">
-                      <ShieldAlert size={12} /> Hỗ trợ tranh chấp 24/7
-                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Mô tả chi tiết sản phẩm */}
               <div className="bg-white rounded-sm border border-slate-200 shadow-sm p-6">
                 <h3 className="text-sm font-bold uppercase mb-4 flex items-center gap-2">
                   <Package size={16} className="text-slate-400" /> Mô tả chi
@@ -234,13 +233,11 @@ export default function AuctionDetailPage({ params }) {
               </div>
             </div>
 
-            {/* CỘT PHẢI (5/12): Đấu giá */}
             <div className="lg:col-span-5 space-y-6 sticky top-20">
               <div className="bg-white rounded-sm border border-slate-200 shadow-sm p-6">
                 <h1 className="text-xl font-bold text-[#003366] uppercase mb-4">
                   {auctionData.title}
                 </h1>
-
                 <div className="grid grid-cols-2 gap-3 mb-6">
                   <div className="p-3 bg-red-50 border border-red-100 rounded-sm">
                     <p className="text-[9px] uppercase font-bold text-red-400 mb-1 flex items-center gap-1">
@@ -293,7 +290,6 @@ export default function AuctionDetailPage({ params }) {
                       <AlertCircle size={12} /> {error}
                     </p>
                   )}
-
                   <button
                     onClick={() => setIsModalOpen(true)}
                     disabled={!!error || !bidValue}
@@ -304,7 +300,6 @@ export default function AuctionDetailPage({ params }) {
                 </div>
               </div>
 
-              {/* Lịch sử trả giá rút gọn */}
               <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
                 <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex items-center gap-2">
                   <History size={14} className="text-slate-400" />
@@ -352,5 +347,20 @@ export default function AuctionDetailPage({ params }) {
         lang={lang}
       />
     </div>
+  );
+}
+
+// 2. Export chính bao bọc bởi Suspense
+export default function AuctionDetailPage({ params }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+          Prerendering page...
+        </div>
+      }
+    >
+      <AuctionDetailContent params={params} />
+    </Suspense>
   );
 }
