@@ -99,7 +99,7 @@ function AuctionContent({ params }) {
               <Link
                 href={`/${lang}`}
                 onClick={handleNavigation}
-                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+                className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
               >
                 <Home size={16} /> {dict?.nav?.home}
               </Link>
@@ -109,7 +109,7 @@ function AuctionContent({ params }) {
               <Link
                 href={`/${lang}?id=dashboard`}
                 onClick={handleNavigation}
-                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+                className="fflex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
               >
                 <LayoutDashboard size={16} />
                 <span>
@@ -121,7 +121,7 @@ function AuctionContent({ params }) {
             <Link
               href={`/${lang}/pages/arbitrationPortal`}
               onClick={handleNavigation}
-              className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+              className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
             >
               <Scale size={16} />
               {lang === "vi" ? "Hội đồng Trọng tài" : "Arbitration Hub"}
@@ -169,7 +169,7 @@ function AuctionContent({ params }) {
               <Link
                 href={`/${lang}?id=dashboard`}
                 onClick={handleNavigation}
-                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+                className="flex items-center gap-2 p-2"
               >
                 <LayoutDashboard size={16} />
                 <span>
