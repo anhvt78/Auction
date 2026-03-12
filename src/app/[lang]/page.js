@@ -164,6 +164,19 @@ function AuctionContent({ params }) {
                 <Home size={18} /> {dict?.nav?.home}
               </Link>
             )}
+
+             {isLoggedIn && (
+              <Link
+                href={`/${lang}?id=dashboard`}
+                onClick={handleNavigation}
+                className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+              >
+                <LayoutDashboard size={16} />
+                <span>
+                  {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
+                </span>
+              </Link>
+            )}
             <Link
               href={`/${lang}/pages/arbitrationPortal`}
               onClick={handleNavigation}
