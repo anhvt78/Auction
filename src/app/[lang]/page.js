@@ -26,7 +26,7 @@ function AuctionContent({ params }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  
+
   // Giải nén params bằng React.use cho Next.js 15+
   const { lang } = React.use(params);
   const [dict, setDict] = useState(null);
@@ -112,7 +112,9 @@ function AuctionContent({ params }) {
                 className="flex items-center gap-1 hover:text-slate-300 transition-colors"
               >
                 <LayoutDashboard size={16} />
-                <span>{lang === "vi" ? "Tài khoản của tôi" : "My Account"}</span>
+                <span>
+                  {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
+                </span>
               </Link>
             )}
 
@@ -122,15 +124,22 @@ function AuctionContent({ params }) {
               className="flex items-center gap-1 hover:text-slate-300 transition-colors"
             >
               <Scale size={16} />
-              {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
+              {lang === "vi" ? "Hội đồng Trọng tài" : "Arbitration Hub"}
             </Link>
 
             <button
-              onClick={() => { setIsLoggedIn(!isLoggedIn); handleNavigation(); }}
+              onClick={() => {
+                setIsLoggedIn(!isLoggedIn);
+                handleNavigation();
+              }}
               className="flex items-center gap-1 hover:text-slate-300 transition-colors"
             >
               <LogIn size={16} />
-              {isLoggedIn ? (lang === "vi" ? "Thoát" : "Logout") : dict?.nav?.login}
+              {isLoggedIn
+                ? lang === "vi"
+                  ? "Thoát"
+                  : "Logout"
+                : dict?.nav?.login}
             </button>
           </div>
 
@@ -147,15 +156,35 @@ function AuctionContent({ params }) {
         {isMenuOpen && (
           <div className="md:hidden bg-[#002855] border-t border-blue-900 absolute w-full shadow-2xl p-4 flex flex-col gap-2 text-sm">
             {id && (
-              <Link href={`/${lang}`} onClick={handleNavigation} className="flex items-center gap-2 p-2">
+              <Link
+                href={`/${lang}`}
+                onClick={handleNavigation}
+                className="flex items-center gap-2 p-2"
+              >
                 <Home size={18} /> {dict?.nav?.home}
               </Link>
             )}
-            <Link href={`/${lang}/pages/arbitrationPortal`} onClick={handleNavigation} className="flex items-center gap-2 p-2">
-              <Scale size={18} /> {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
+            <Link
+              href={`/${lang}/pages/arbitrationPortal`}
+              onClick={handleNavigation}
+              className="flex items-center gap-2 p-2"
+            >
+              <Scale size={18} />{" "}
+              {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
             </Link>
-            <button onClick={() => { setIsLoggedIn(!isLoggedIn); handleNavigation(); }} className="flex items-center gap-2 p-2">
-              <LogIn size={18} /> {isLoggedIn ? (lang === "vi" ? "Thoát" : "Logout") : dict?.nav?.login}
+            <button
+              onClick={() => {
+                setIsLoggedIn(!isLoggedIn);
+                handleNavigation();
+              }}
+              className="flex items-center gap-2 p-2"
+            >
+              <LogIn size={18} />{" "}
+              {isLoggedIn
+                ? lang === "vi"
+                  ? "Thoát"
+                  : "Logout"
+                : dict?.nav?.login}
             </button>
           </div>
         )}
@@ -170,8 +199,18 @@ function AuctionContent({ params }) {
             <ChevronDown size={12} />
           </button>
           <div className="absolute right-0 top-full mt-1 w-44 bg-white shadow-xl border border-slate-200 hidden group-hover:block z-50">
-            <Link href="/en" className="block px-4 py-2 text-sm hover:bg-slate-100">English (US)</Link>
-            <Link href="/vi" className="block px-4 py-2 text-sm hover:bg-slate-100">Tiếng Việt</Link>
+            <Link
+              href="/en"
+              className="block px-4 py-2 text-sm hover:bg-slate-100"
+            >
+              English (US)
+            </Link>
+            <Link
+              href="/vi"
+              className="block px-4 py-2 text-sm hover:bg-slate-100"
+            >
+              Tiếng Việt
+            </Link>
           </div>
         </div>
       </div>
@@ -180,8 +219,12 @@ function AuctionContent({ params }) {
       <main className="max-w-6xl mx-auto my-4 bg-white shadow-sm border border-slate-200 rounded-sm overflow-hidden">
         <div className="px-6 py-8">
           <section className="bg-white border border-slate-200 mb-8 overflow-hidden">
-            <div className="bg-[#004a99] text-white px-4 py-2 font-bold">{dict?.banner?.title}</div>
-            <div className="p-6 text-sm text-slate-700 leading-relaxed">{dict?.banner?.description}</div>
+            <div className="bg-[#004a99] text-white px-4 py-2 font-bold">
+              {dict?.banner?.title}
+            </div>
+            <div className="p-6 text-sm text-slate-700 leading-relaxed">
+              {dict?.banner?.description}
+            </div>
           </section>
 
           <h2 className="text-[#004a99] text-2xl font-light border-b border-blue-200 pb-2 mb-6 uppercase">
@@ -190,26 +233,42 @@ function AuctionContent({ params }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {auctions.map((item) => (
-              <Link key={item.id} href={`/${lang}/pages/auctionDetail?id=${item.id}`} className="group">
+              <Link
+                key={item.id}
+                href={`/${lang}/pages/auctionDetail?id=${item.id}`}
+                className="group"
+              >
                 <div className="bg-white border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all">
                   <div className="flex justify-between p-4">
                     <span className="bg-[#77b300] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase flex items-center gap-1">
                       <Gavel size={10} /> {item.status}
                     </span>
                     <div className="text-right px-4">
-                      <h3 className="text-[#003366] text-xl font-bold group-hover:text-blue-700">{item.location}</h3>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">{item.date}</p>
+                      <h3 className="text-[#003366] text-xl font-bold group-hover:text-blue-700">
+                        {item.location}
+                      </h3>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">
+                        {item.date}
+                      </p>
                     </div>
                     <ChevronRight className="text-slate-300 group-hover:translate-x-1 transition-transform" />
                   </div>
                   <div className="grid grid-cols-2 border-t border-slate-100 text-center divide-x divide-slate-100">
                     <div className="py-4 bg-slate-50/50">
-                      <p className="text-2xl text-slate-700 font-light">{item.lots}</p>
-                      <p className="text-[10px] uppercase text-slate-500 font-bold">{dict?.auction?.lots_in_auction}</p>
+                      <p className="text-2xl text-slate-700 font-light">
+                        {item.lots}
+                      </p>
+                      <p className="text-[10px] uppercase text-slate-500 font-bold">
+                        {dict?.auction?.lots_in_auction}
+                      </p>
                     </div>
                     <div className="py-4">
-                      <p className="text-2xl text-slate-700 font-light">{item.time.split(" ")[0]}</p>
-                      <p className="text-[10px] uppercase text-slate-500 font-bold">{item.time.split(" ")[1]} {dict?.auction?.to_closure}</p>
+                      <p className="text-2xl text-slate-700 font-light">
+                        {item.time.split(" ")[0]}
+                      </p>
+                      <p className="text-[10px] uppercase text-slate-500 font-bold">
+                        {item.time.split(" ")[1]} {dict?.auction?.to_closure}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -221,7 +280,9 @@ function AuctionContent({ params }) {
 
       {/* Help Button */}
       <button className="fixed bottom-6 right-6 bg-[#2c3e50] text-white px-5 py-2.5 rounded-full flex items-center gap-2 shadow-2xl hover:bg-slate-700 z-40 transition-all">
-        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">?</span>
+        <span className="bg-white text-slate-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">
+          ?
+        </span>
         <span className="font-bold text-sm uppercase tracking-wider">Help</span>
       </button>
     </div>
@@ -231,7 +292,13 @@ function AuctionContent({ params }) {
 // Export mặc định được bao bọc bởi Suspense để vượt qua kiểm tra build
 export default function AuctionPage({ params }) {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-slate-500">Loading Application...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-slate-500">
+          Loading Application...
+        </div>
+      }
+    >
       <AuctionContent params={params} />
     </Suspense>
   );
