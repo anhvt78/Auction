@@ -29,7 +29,6 @@ function ArbitrationPortalContent({ params }) {
 
   // Trạng thái tạm dừng cấp cá nhân
   const [isAvailable, setIsAvailable] = useState(true);
-  const [isArbitratorRegistered, setIsArbitratorRegistered] = useState(false); // Trạng thái mẫu
 
   // Thống kê dành cho Hội đồng trọng tài
   const adminStats = [
@@ -132,8 +131,8 @@ function ArbitrationPortalContent({ params }) {
             <ShieldAlert size={16} />
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">
               {lang === "vi"
-                ? dict?.arbitration?.no_new_cases_alert
-                : dict?.arbitration?.no_new_cases_alert}
+                ? "Hệ thống sẽ không phân phối vụ việc mới khi bạn đang ở trạng thái Tạm nghỉ"
+                : "No new cases will be assigned while you are in Pause status"}
             </p>
           </div>
         )}
@@ -239,36 +238,6 @@ function ArbitrationPortalContent({ params }) {
     </div>
   );
 }
-
-export default function ArbitrationPortalPage({ params }) {
-  return (
-    <Suspense
-      fallback={
-        <div className="p-20 text-center text-xs uppercase tracking-widest text-slate-400">
-          Loading Council Portal...
-        </div>
-      }
-    >
-      <ArbitrationPortalContent params={params} />
-    </Suspense>
-  );
-}
-{/* <Scale size={48} className="mx-auto text-slate-200" />
-                    <p className="text-slate-500 text-sm italic">
-                      {lang === "vi"
-                        ? "Chào mừng trở lại Hội đồng Trọng tài."
-                        : "Welcome back to the Arbitration Council."}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-} */}
 
 export default function ArbitrationPortalPage({ params }) {
   return (
