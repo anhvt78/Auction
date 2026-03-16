@@ -203,33 +203,6 @@ function AuctionContent({ params }) {
         )}
       </nav>
 
-      {/* 2. Language Selector */}
-      <div className="max-w-6xl mx-auto px-4 py-2 flex justify-end">
-        <div className="relative group">
-          <button className="flex items-center gap-1 text-slate-600 text-[13px] font-medium hover:text-slate-900" onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}>
-            <Globe size={14} />
-            <span>{lang === "vi" ? "Tiếng Việt" : "English (US)"}</span>
-            <ChevronDown size={12} />
-          </button>
-          {isLanguageDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1 w-44 bg-white shadow-xl border border-slate-200 z-50">
-            <Link
-              href="/en"
-              onClick={() => setIsLanguageDropdownOpen(false)}
-              className="block px-4 py-2 text-sm hover:bg-slate-100"
-            >
-              English (US)
-            </Link>
-            <Link
-              href="/vi"
-              onClick={() => setIsLanguageDropdownOpen(false)}
-              className="block px-4 py-2 text-sm hover:bg-slate-100"
-            >
-              Tiếng Việt
-            </Link>
-          </div>
-        )}
-
       {/* 3. Main Content */}
       <main className="max-w-6xl mx-auto my-4 bg-white shadow-sm border border-slate-200 rounded-sm overflow-hidden">
         <div className="px-6 py-8">
