@@ -44,5 +44,14 @@
       "success": "Success",
       "pending": "Pending"
     }
+  },
+  "arbitration": {
+    "register_button": "Register as Arbitrator",
+    "pause_button": "Pause Intake",
+    "active_button": "Activate Intake",
+    "intake_status": "Intake Status",
+    "status_available": "Available",
+    "status_paused": "Paused",
+    "no_new_cases_alert": "No new cases will be assigned while you are in Pause status"
   }
 }

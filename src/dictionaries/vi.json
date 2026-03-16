@@ -44,6 +44,15 @@
       "success": "Thành công",
       "pending": "Chờ xử lý"
     }
+  },
+  "arbitration": {
+    "register_button": "Đăng ký Trọng tài",
+    "pause_button": "Tạm dừng tiếp nhận",
+    "active_button": "Tiếp nhận vụ việc",
+    "intake_status": "Trạng thái tiếp nhận",
+    "status_available": "Đang trực",
+    "status_paused": "Đang nghỉ",
+    "no_new_cases_alert": "Hệ thống sẽ không phân phối vụ việc mới khi bạn đang ở trạng thái Tạm nghỉ"
   }
 }n đây",
       "bid_placed": "Đã đặt giá",
