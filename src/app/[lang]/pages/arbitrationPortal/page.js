@@ -253,7 +253,7 @@ export default function ArbitrationPortalPage({ params }) {
     </Suspense>
   );
 }
-ze={48} className="mx-auto text-slate-200" />
+{/* <Scale size={48} className="mx-auto text-slate-200" />
                     <p className="text-slate-500 text-sm italic">
                       {lang === "vi"
                         ? "Chào mừng trở lại Hội đồng Trọng tài."
@@ -268,7 +268,7 @@ ze={48} className="mx-auto text-slate-200" />
       </main>
     </div>
   );
-}
+} */}
 
 export default function ArbitrationPortalPage({ params }) {
   return (
