@@ -16,8 +16,8 @@ export async function generateMetadata({ params }) {
   const dict = await getDictionary(lang);
 
   return {
-    title: dict?.nav?.title || "U.S. Embassy Online Auction",
-    description: dict?.banner?.description || "Online Auction System",
+    title: dict?.nav?.title || "Sàn Đấu Giá Blockchain | Giải Quyết Tranh Chấp Phi Tập Trung",
+    description: dict?.banner?.description || "Nền tảng đấu giá trực tuyến sử dụng công nghệ Blockchain để đảm bảo thanh toán an toàn và giải quyết mọi tranh chấp qua hệ thống trọng tài phi tập trung.",
     // Các thuộc tính khác giúp hỗ trợ SEO tốt hơn
     alternates: {
       languages: {

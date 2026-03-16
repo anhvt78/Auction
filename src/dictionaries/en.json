@@ -1,14 +1,14 @@
 {
   "nav": {
-    "title": "U.S. Embassy Online Auction",
+    "title": "Blockchain Auction | Decentralized Dispute Resolution",
     "home": "Home",
     "register": "Register",
     "login": "Login",
     "my_account": "My Account"
   },
   "banner": {
-    "title": "U.S. Embassy Online Auction",
-    "description": "The U.S. Embassies are selling surplus property (household furniture, office furniture, appliances, vehicles and other items) via a Web-based Electronic Auction. During this period you can actively take part and submit your bid for the surplus property."
+    "title": "Blockchain Auction | Decentralized Dispute Resolution",
+    "description": "An online auction platform leveraging Blockchain technology to ensure secure payments and resolve disputes through a decentralized arbitration system."
   },
   "auction": {
     "all_auctions": "All Auctions",

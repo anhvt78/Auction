@@ -8,7 +8,7 @@
   },
   "banner": {
     "title": "Đấu giá Trực tuyến",
-    "description": "Trang website đang bán các tài sản dư thừa (đồ nội thất gia đình, nội thất văn phòng, đồ gia dụng, phương tiện và các vật phẩm khác) thông qua hình thức Đấu giá Điện tử trên nền tảng Web. Trong thời gian này, bạn có thể tham gia tích cực và gửi giá thầu của mình cho các tài sản đó."
+    "description": "Nền tảng đấu giá trực tuyến sử dụng công nghệ Blockchain để đảm bảo thanh toán an toàn và giải quyết mọi tranh chấp qua hệ thống trọng tài phi tập trung."
   },
   "auction": {
     "all_auctions": "Tất cả các cuộc đấu giá",
@@ -38,6 +38,14 @@
     },
     "history": {
       "title": "Hoạt động gần đây",
+      "bid_placed": "Đã đặt giá",
+      "auction_won": "Thắng đấu giá",
+      "withdraw": "Rút tiền",
+      "success": "Thành công",
+      "pending": "Chờ xử lý"
+    }
+  }
+}n đây",
       "bid_placed": "Đã đặt giá",
       "auction_won": "Thắng đấu giá",
       "withdraw": "Rút tiền",

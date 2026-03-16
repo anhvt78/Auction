@@ -109,7 +109,7 @@ function AuctionContent({ params }) {
               <Link
                 href={`/${lang}?id=dashboard`}
                 onClick={handleNavigation}
-                className="fflex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
+                className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
               >
                 <LayoutDashboard size={16} />
                 <span>
