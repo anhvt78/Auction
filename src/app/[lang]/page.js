@@ -1,25 +1,52 @@
-import { Suspense } from "react";
+"use client";
+
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getDictionary } from "@/lib/get-dictionary";
 import UserDashboard from "@/components/UserDashboard";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-
 import {
   Gavel,
   Home,
   LogIn,
+  Globe,
   Package,
   Clock,
   ChevronRight,
+  ChevronDown,
   Menu,
   X,
   LayoutDashboard,
   Scale,
 } from "lucide-react";
 
-async function ServerAuctionContent({ lang, searchParams }) {
-  const dict = await getDictionary(lang);
-  const id = searchParams?.id;
+// Component chứa nội dung chính của trang
+function AuctionContent({ params }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  // Giải nén params bằng React.use cho Next.js 15+
+  const { lang } = React.use(params);
+  const [dict, setDict] = useState(null);
+
+  useEffect(() => {
+    getDictionary(lang).then(setDict);
+  }, [lang]);
+
+  // Hàm xử lý đóng menu khi nhấn vào link điều hướng
+  const handleNavigation = () => {
+    setIsMenuOpen(false);
+  };
+
+  if (!dict) {
+    return (
+      <div className="min-h-screen bg-[#f4f7f9] flex items-center justify-center font-sans text-slate-500">
+        Loading...
+      </div>
+    );
+  }
 
   // Chuyển đổi hiển thị giữa Dashboard và Danh sách đấu giá
   if (id === "dashboard") {
@@ -68,42 +95,112 @@ async function ServerAuctionContent({ lang, searchParams }) {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-6 text-sm">
-            <LanguageSwitcher lang={lang} />
-
             {id && (
               <Link
                 href={`/${lang}`}
+                onClick={handleNavigation}
                 className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
               >
                 <Home size={16} /> {dict?.nav?.home}
               </Link>
             )}
 
-            {/* isLoggedIn cần được quản lý ở client component hoặc truyền từ server với giá trị ban đầu */}
-            <Link
-              href={`/${lang}?id=dashboard`}
-              className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
-            >
-              <LayoutDashboard size={16} />
-              <span>
-                {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
-              </span>
-            </Link>
+            {isLoggedIn && (
+              <Link
+                href={`/${lang}?id=dashboard`}
+                onClick={handleNavigation}
+                className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
+              >
+                <LayoutDashboard size={16} />
+                <span>
+                  {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
+                </span>
+              </Link>
+            )}
 
             <Link
               href={`/${lang}/pages/arbitrationPortal`}
+              onClick={handleNavigation}
               className="flex items-center gap-2 p-2 hover:text-slate-300 transition-colors"
             >
               <Scale size={16} />
               {lang === "vi" ? "Hội đồng Trọng tài" : "Arbitration Hub"}
             </Link>
 
-            {/* Nút login/logout cần client component để quản lý trạng thái */} 
+            <button
+              onClick={() => {
+                setIsLoggedIn(!isLoggedIn);
+                handleNavigation();
+              }}
+              className="flex items-center gap-1 hover:text-slate-300 transition-colors"
+            >
+              <LogIn size={16} />
+              {isLoggedIn
+                ? lang === "vi"
+                  ? "Thoát"
+                  : "Logout"
+                : dict?.nav?.login}
+            </button>
           </div>
 
-          {/* Hamburger Button (cần Client Component) */}
-          {/* Mobile Menu (cần Client Component) */} 
+          {/* Hamburger Button */}
+          <button
+            className="md:hidden p-2 text-slate-300 hover:text-white"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-[#002855] border-t border-blue-900 absolute w-full shadow-2xl p-4 flex flex-col gap-2 text-sm">
+            {id && (
+              <Link
+                href={`/${lang}`}
+                onClick={handleNavigation}
+                className="flex items-center gap-2 p-2"
+              >
+                <Home size={18} /> {dict?.nav?.home}
+              </Link>
+            )}
+
+             {isLoggedIn && (
+              <Link
+                href={`/${lang}?id=dashboard`}
+                onClick={handleNavigation}
+                className="flex items-center gap-2 p-2"
+              >
+                <LayoutDashboard size={16} />
+                <span>
+                  {lang === "vi" ? "Tài khoản của tôi" : "My Account"}
+                </span>
+              </Link>
+            )}
+            <Link
+              href={`/${lang}/pages/arbitrationPortal`}
+              onClick={handleNavigation}
+              className="flex items-center gap-2 p-2"
+            >
+              <Scale size={18} />{" "}
+              {lang === "vi" ? "Trung tâm Trọng tài" : "Arbitration Hub"}
+            </Link>
+            <button
+              onClick={() => {
+                setIsLoggedIn(!isLoggedIn);
+                handleNavigation();
+              }}
+              className="flex items-center gap-2 p-2"
+            >
+              <LogIn size={18} />{" "}
+              {isLoggedIn
+                ? lang === "vi"
+                  ? "Thoát"
+                  : "Logout"
+                : dict?.nav?.login}
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* 3. Main Content */}
@@ -180,9 +277,8 @@ async function ServerAuctionContent({ lang, searchParams }) {
   );
 }
 
-export default async function AuctionPage({ params, searchParams }) {
-  const { lang } = params;
-  
+// Export mặc định được bao bọc bởi Suspense để vượt qua kiểm tra build
+export default function AuctionPage({ params }) {
   return (
     <Suspense
       fallback={
@@ -191,7 +287,7 @@ export default async function AuctionPage({ params, searchParams }) {
         </div>
       }
     >
-      <ServerAuctionContent lang={lang} searchParams={searchParams} />
+      <AuctionContent params={params} />
     </Suspense>
   );
 }
