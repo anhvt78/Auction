@@ -26,7 +26,6 @@ import SettingsForm from "./SettingsForm";
 import DisputeList from "./DisputeList";
 import DisputeDetail from "./DisputeDetail";
 
-
 export default function UserDashboard({ lang }) {
   // Trạng thái điều hướng
   const [activeTab, setActiveTab] = useState("overview"); // overview, my-auctions, history, settings
@@ -114,6 +113,11 @@ export default function UserDashboard({ lang }) {
             }, // Tab mới
 
 
+
+              id: "arbitrations",
+              label: lang === "vi" ? "Xử lý tranh chấp" : "Arbitrations",
+              icon: <Gavel size={18} />,
+            }, // Tab mới
 
             {
               id: "settings",

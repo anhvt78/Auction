@@ -19,8 +19,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import DisputeList from "@/components/DisputeList";
-import DisputeDetail from "@/components/DisputeDetail";
+import ArbitrationDetail from "@/components/ArbitrationDetail";
+import ArtritrationList from "@/components/ArtritrationList";
 
 // ĐÃ CẬP NHẬT: Import chính xác tên file ArbitratorList.js bạn vừa thay đổi
 import ArbitratorList from "@/components/arbitration/ArbitratorList";
@@ -175,9 +175,9 @@ function ArbitrationPortalContent({ params }) {
                 icon: <ShieldAlert size={18} />,
               },
               {
-                id: "disputes",
-                label: lang === "vi" ? "Tranh chấp của tôi" : "My Disputes",
-                icon: <ShieldAlert size={18} />,
+                id: "arbitrations",
+                label: lang === "vi" ? "Xử lý tranh chấp" : "Arbitrations",
+                icon: <Gavel size={18} />,
               },
               {
                 id: "history",
@@ -215,6 +215,8 @@ function ArbitrationPortalContent({ params }) {
                       : "General Dashboard")}
                   {activeTab === "active-cases" &&
                     (lang === "vi" ? "Hồ sơ chờ phán quyết" : "Active Files")}
+                  {activeTab === "arbitrations" &&
+                    (lang === "vi" ? "Vụ việc đang xử lý" : "Arbitration Cases")}
                   {activeTab === "history" &&
                     (lang === "vi" ? "Lịch sử phán quyết" : "Judgment History")}
                 </h2>
@@ -228,13 +230,11 @@ function ArbitrationPortalContent({ params }) {
                   />
                 )}
 
-                {activeTab === "disputes" && (
-                  <div>
-                    <DisputeList
-                      lang={lang}
-                      onViewDetail={(item) => console.log("Detail for:", item)}
-                    />
-                  </div>
+                {activeTab === "arbitrations" && (
+                  <ArtritrationList
+                    lang={lang}
+                    onViewDetail={(item) => console.log("Detail for:", item)}
+                  />
                 )}
 
                 {activeTab === "overview" && (
