@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import DisputeList from "@/components/DisputeList";
+import DisputeDetail from "@/components/DisputeDetail";
+
 // ĐÃ CẬP NHẬT: Import chính xác tên file ArbitratorList.js bạn vừa thay đổi
 import ArbitratorList from "@/components/arbitration/ArbitratorList";
 
@@ -172,6 +175,11 @@ function ArbitrationPortalContent({ params }) {
                 icon: <ShieldAlert size={18} />,
               },
               {
+                id: "disputes",
+                label: lang === "vi" ? "Tranh chấp của tôi" : "My Disputes",
+                icon: <ShieldAlert size={18} />,
+              },
+              {
                 id: "history",
                 label: lang === "vi" ? "Lịch sử phán quyết" : "History",
                 icon: <History size={18} />,
@@ -218,6 +226,15 @@ function ArbitrationPortalContent({ params }) {
                     lang={lang}
                     onViewDetail={(item) => console.log("Detail for:", item)}
                   />
+                )}
+
+                {activeTab === "disputes" && (
+                  <div>
+                    <DisputeList
+                      lang={lang}
+                      onViewDetail={(item) => console.log("Detail for:", item)}
+                    />
+                  </div>
                 )}
 
                 {activeTab === "overview" && (

@@ -25,8 +25,7 @@ import MyBidDetail from "./MyBidDetail";
 import SettingsForm from "./SettingsForm";
 import DisputeList from "./DisputeList";
 import DisputeDetail from "./DisputeDetail";
-import ArbitrationDetail from "./ArbitrationDetail";
-import ArtritrationList from "./ArtritrationList";
+
 
 export default function UserDashboard({ lang }) {
   // Trạng thái điều hướng
@@ -114,11 +113,7 @@ export default function UserDashboard({ lang }) {
               icon: <ShieldAlert size={18} />,
             }, // Tab mới
 
-            {
-              id: "arbitrations",
-              label: lang === "vi" ? "Xử lý tranh chấp" : "Arbitrations",
-              icon: <Gavel size={18} />,
-            }, // Tab mới
+
 
             {
               id: "settings",
@@ -263,25 +258,7 @@ export default function UserDashboard({ lang }) {
                 // <div>Test Dispute Tab</div>
               }
 
-              {
-                activeTab === "arbitrations" &&
-                  (viewMode === "arbitration-detail" ? (
-                    <ArbitrationDetail
-                      data={selectedItem}
-                      lang={lang}
-                      onBack={() => setViewMode("list")}
-                    />
-                  ) : (
-                    <ArtritrationList
-                      lang={lang}
-                      onViewDetail={(item) => {
-                        setSelectedItem(item);
-                        setViewMode("arbitration-detail");
-                      }}
-                    />
-                  ))
-                // <div>Test Dispute Tab</div>
-              }
+
 
               {activeTab === "settings" && <SettingsForm lang={lang} />}
             </div>
