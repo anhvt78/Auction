@@ -30,6 +30,8 @@ function ArbitrationPortalContent({ params }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [viewMode, setViewMode] = useState("list");
 
+  const [selectedItem, setSelectedItem] = useState(null);
+
   // Trạng thái tạm dừng cấp cá nhân
   const [isAvailable, setIsAvailable] = useState(true);
 

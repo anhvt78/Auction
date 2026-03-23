@@ -263,26 +263,6 @@ export default function UserDashboard({ lang }) {
                 // <div>Test Dispute Tab</div>
               }
 
-              {/* {
-                activeTab === "arbitrations" &&
-                  (viewMode === "arbitration-detail" ? (
-                    <ArbitrationDetail
-                      data={selectedItem}
-                      lang={lang}
-                      onBack={() => setViewMode("list")}
-                    />
-                  ) : (
-                    <ArtritrationList
-                      lang={lang}
-                      onViewDetail={(item) => {
-                        setSelectedItem(item);
-                        setViewMode("arbitration-detail");
-                      }}
-                    />
-                  ))
-                // <div>Test Dispute Tab</div>
-              } */}
-
               {activeTab === "settings" && <SettingsForm lang={lang} />}
             </div>
           </div>
