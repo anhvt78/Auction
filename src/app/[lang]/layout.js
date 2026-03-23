@@ -16,8 +16,12 @@ export async function generateMetadata({ params }) {
   const dict = await getDictionary(lang);
 
   return {
-    title: dict?.nav?.title || "Sàn Đấu Giá Blockchain | Giải Quyết Tranh Chấp Phi Tập Trung",
-    description: dict?.banner?.description || "Nền tảng đấu giá trực tuyến sử dụng công nghệ Blockchain để đảm bảo thanh toán an toàn và giải quyết mọi tranh chấp qua hệ thống trọng tài phi tập trung.",
+    title:
+      dict?.nav?.title ||
+      "Sàn Đấu Giá Blockchain | Giải Quyết Tranh Chấp Phi Tập Trung",
+    description:
+      dict?.banner?.description ||
+      "Nền tảng đấu giá trực tuyến sử dụng công nghệ Blockchain để đảm bảo thanh toán an toàn và giải quyết mọi tranh chấp qua hệ thống trọng tài phi tập trung.",
     // Các thuộc tính khác giúp hỗ trợ SEO tốt hơn
     alternates: {
       languages: {
@@ -31,14 +35,14 @@ export async function generateMetadata({ params }) {
 export default async function RootLayout({ children, params }) {
   const { lang } = await params;
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <body
+    <div lang={lang} suppressHydrationWarning>
+      <div
         className={`${inter.className} bg-slate-50 text-slate-900`}
         // Một số ví Web3 hoặc extension chèn thêm attribute vào body nên cũng cần suppress ở đây
         suppressHydrationWarning
       >
         <Web3Provider>{children}</Web3Provider>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

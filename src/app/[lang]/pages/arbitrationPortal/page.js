@@ -21,11 +21,14 @@ import Link from "next/link";
 
 // ĐÃ CẬP NHẬT: Import chính xác tên file ArbitratorList.js bạn vừa thay đổi
 import ArbitratorList from "@/components/arbitration/ArbitratorList";
+import ArbitrationDetail from "@/components/ArbitrationDetail";
+import ArtritrationList from "@/components/ArtritrationList";
 
 function ArbitrationPortalContent({ params }) {
   // Giải nén params theo chuẩn Next.js mới
   const { lang } = React.use(params);
   const [activeTab, setActiveTab] = useState("overview");
+  const [viewMode, setViewMode] = useState("list");
 
   // Trạng thái tạm dừng cấp cá nhân
   const [isAvailable, setIsAvailable] = useState(true);
@@ -172,10 +175,15 @@ function ArbitrationPortalContent({ params }) {
                 icon: <ShieldAlert size={18} />,
               },
               {
-                id: "history",
-                label: lang === "vi" ? "Lịch sử phán quyết" : "History",
-                icon: <History size={18} />,
-              },
+                id: "arbitrations",
+                label: lang === "vi" ? "Xử lý tranh chấp" : "Arbitrations",
+                icon: <Gavel size={18} />,
+              }, // Tab mới
+              // {
+              //   id: "history",
+              //   label: lang === "vi" ? "Lịch sử phán quyết" : "History",
+              //   icon: <History size={18} />,
+              // },
               {
                 id: "rules",
                 label: lang === "vi" ? "Quy định" : "Rules",
@@ -207,8 +215,8 @@ function ArbitrationPortalContent({ params }) {
                       : "General Dashboard")}
                   {activeTab === "active-cases" &&
                     (lang === "vi" ? "Hồ sơ chờ phán quyết" : "Active Files")}
-                  {activeTab === "history" &&
-                    (lang === "vi" ? "Lịch sử phán quyết" : "Judgment History")}
+                  {/* {activeTab === "history" &&
+                    (lang === "vi" ? "Lịch sử phán quyết" : "Judgment History")} */}
                 </h2>
               </div>
 
@@ -230,6 +238,26 @@ function ArbitrationPortalContent({ params }) {
                     </p>
                   </div>
                 )}
+
+                {
+                  activeTab === "arbitrations" &&
+                    (viewMode === "arbitration-detail" ? (
+                      <ArbitrationDetail
+                        data={selectedItem}
+                        lang={lang}
+                        onBack={() => setViewMode("list")}
+                      />
+                    ) : (
+                      <ArtritrationList
+                        lang={lang}
+                        onViewDetail={(item) => {
+                          setSelectedItem(item);
+                          setViewMode("arbitration-detail");
+                        }}
+                      />
+                    ))
+                  // <div>Test Dispute Tab</div>
+                }
               </div>
             </div>
           </div>
