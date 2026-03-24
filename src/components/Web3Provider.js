@@ -11,6 +11,7 @@ const config = getDefaultConfig({
   appName: 'Blockchain Auction',
   projectId: 'YOUR_WALLET_CONNECT_ID', 
   chains: [lukso, mainnet],
+  ssr: true,
 });
 
 export function Web3Provider({ children }) {
