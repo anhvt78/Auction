@@ -87,6 +87,12 @@ export default function UserDashboard({ lang }) {
       );
     }
 
+    if (viewMode === "dispute-detail") {
+      return (
+        <DisputeDetail data={selectedItem} lang={lang} onBack={handleBack} />
+      );
+    }
+
     // Chế độ danh sách mặc định (Tabs)
     return (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -100,18 +106,18 @@ export default function UserDashboard({ lang }) {
             },
             {
               id: "my-auctions",
-              label: lang === "vi" ? "Đấu giá của tôi" : "My Auctions",
+              label: lang === "vi" ? "Bán đấu giá" : "My Auctions",
               icon: <Package size={18} />,
             },
             {
-              id: "history",
-              label: lang === "vi" ? "Lịch sử trả giá" : "Bid History",
-              icon: <History size={18} />,
+              id: "bid",
+              label: lang === "vi" ? "Đấu giá" : "My Bids",
+              icon: <Gavel size={18} />,
             },
             {
               id: "disputes",
-              label: lang === "vi" ? "Tranh chấp của tôi" : "My Disputes",
-              icon: <ShieldAlert size={18} />,
+              label: lang === "vi" ? "Tranh chấp" : "My Disputes",
+              icon: <Scale size={18} />,
             }, // Tab mới
 
             // {
@@ -146,10 +152,10 @@ export default function UserDashboard({ lang }) {
                 (lang === "vi"
                   ? "Lô hàng bạn đang đăng bán"
                   : "My Selling Lots")}
-              {activeTab === "history" &&
+              {activeTab === "bid" &&
                 (lang === "vi"
                   ? "Các lô hàng bạn đang đấu giá"
-                  : "Your Bidding History")}
+                  : "Your Bidding")}
               {activeTab === "disputes" &&
                 (lang === "vi"
                   ? "Các lô hàng bạn đang tranh chấp"
@@ -205,7 +211,7 @@ export default function UserDashboard({ lang }) {
               )}
 
               {/* TAB LỊCH SỬ TRẢ GIÁ (Người mua) */}
-              {activeTab === "history" && (
+              {activeTab === "bid" && (
                 <div className="group border border-slate-100 p-4 hover:border-red-300 transition-all rounded-sm flex justify-between items-center">
                   <div className="flex gap-4 items-center">
                     <div className="w-16 h-16 bg-slate-100 rounded flex items-center justify-center text-slate-400 font-bold text-[10px]">
@@ -244,22 +250,15 @@ export default function UserDashboard({ lang }) {
               )}
 
               {
-                activeTab === "disputes" &&
-                  (viewMode === "dispute-detail" ? (
-                    <DisputeDetail
-                      data={selectedItem}
-                      lang={lang}
-                      onBack={() => setViewMode("list")}
-                    />
-                  ) : (
-                    <DisputeList
-                      lang={lang}
-                      onViewDetail={(item) => {
-                        setSelectedItem(item);
-                        setViewMode("dispute-detail");
-                      }}
-                    />
-                  ))
+                activeTab === "disputes" && (
+                  <DisputeList
+                    lang={lang}
+                    onViewDetail={(item) => {
+                      setSelectedItem(item);
+                      setViewMode("dispute-detail");
+                    }}
+                  />
+                )
                 // <div>Test Dispute Tab</div>
               }
 

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Gavel, Clock, ChevronRight } from "lucide-react";
+import { Gavel, Clock, ChevronRight, Scale } from "lucide-react";
 
 export default function DisputeList({ lang, onViewDetail }) {
   const disputes = [
@@ -23,7 +23,7 @@ export default function DisputeList({ lang, onViewDetail }) {
         >
           <div className="flex gap-4 items-center">
             <div className="bg-amber-100 p-3 rounded-full text-amber-600">
-              <Gavel size={20} />
+              <Scale size={20} />
             </div>
             <div>
               <div className="flex items-center gap-2">

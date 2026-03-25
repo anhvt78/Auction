@@ -23,7 +23,7 @@ export default function MyAuctionDetail({ data, onBack, lang }) {
     <div className="space-y-6 animate-in fade-in duration-300">
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#003366] font-bold uppercase transition-colors"
+        className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#ffffff] font-bold uppercase transition-colors"
       >
         <ArrowLeft size={16} />{" "}
         {lang === "vi" ? "Quay lại danh sách" : "Back to list"}

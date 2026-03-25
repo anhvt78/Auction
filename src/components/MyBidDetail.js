@@ -36,7 +36,7 @@ export default function MyBidDetail({ data, onBack, lang }) {
       <div className="flex justify-between items-center">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#003366] font-bold uppercase transition-colors group"
+          className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#ffffff] font-bold uppercase transition-colors group"
         >
           <ArrowLeft
             size={16}
