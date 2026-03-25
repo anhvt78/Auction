@@ -16,23 +16,26 @@ import {
   UserCheck,
   PauseCircle,
   PlayCircle,
+  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 
-// ĐÃ CẬP NHẬT: Import chính xác tên file ArbitratorList.js bạn vừa thay đổi
+// Import các component liên quan
 import ArbitratorList from "@/components/arbitration/ArbitratorList";
 import ArbitrationDetail from "@/components/ArbitrationDetail";
 import ArtritrationList from "@/components/ArtritrationList";
 
 function ArbitrationPortalContent({ params }) {
-  // Giải nén params theo chuẩn Next.js mới
+  // Giải nén params theo chuẩn Next.js 15+
   const { lang } = React.use(params);
   const [activeTab, setActiveTab] = useState("overview");
   const [viewMode, setViewMode] = useState("list");
-
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // Trạng thái tạm dừng cấp cá nhân
+  // Trạng thái xác định người dùng đã là trọng tài hay chưa
+  const [isArbitrator, setIsArbitrator] = useState(false);
+
+  // Trạng thái tạm dừng tiếp nhận vụ việc
   const [isAvailable, setIsAvailable] = useState(true);
 
   // Thống kê dành cho Hội đồng trọng tài
@@ -63,6 +66,35 @@ function ArbitrationPortalContent({ params }) {
     },
   ];
 
+  // Định nghĩa danh sách các tab ở Left Panel
+  const tabs = [
+    {
+      id: "overview",
+      label: lang === "vi" ? "Tổng quan" : "Overview",
+      icon: <LayoutDashboard size={18} />,
+    },
+    {
+      id: "active-cases",
+      label: lang === "vi" ? "Đội ngũ trọng tài" : "The Arbitrators",
+      icon: <ShieldAlert size={18} />,
+    },
+    // ĐIỀU CHỈNH: Chỉ thêm tab Xử lý tranh chấp nếu đã là trọng tài
+    ...(isArbitrator
+      ? [
+          {
+            id: "arbitrations",
+            label: lang === "vi" ? "Xử lý tranh chấp" : "Dispute Resolution",
+            icon: <Scale size={18} />,
+          },
+        ]
+      : []),
+    {
+      id: "rules",
+      label: lang === "vi" ? "Quy định" : "Rules",
+      icon: <ShieldCheck size={18} />,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-[#f4f7f9] font-sans pb-20">
       {/* Header Hội đồng */}
@@ -83,55 +115,69 @@ function ArbitrationPortalContent({ params }) {
               </h1>
             </div>
 
-            {/* Điều khiển Trạng thái Cá nhân */}
-            <div
-              className={`p-4 rounded-sm border flex items-center gap-4 transition-all duration-500 ${isAvailable ? "bg-slate-800/50 border-slate-700" : "bg-red-950/40 border-red-900/50"}`}
-            >
-              <div className="text-right">
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">
-                  {lang === "vi" ? "Trạng thái tiếp nhận" : "Intake Status"}
-                </p>
-                <p
-                  className={`text-[11px] font-bold uppercase ${isAvailable ? "text-green-400" : "text-red-400"}`}
-                >
-                  {isAvailable
-                    ? lang === "vi"
-                      ? "Đang trực"
-                      : "Available"
-                    : lang === "vi"
-                      ? "Đang nghỉ"
-                      : "Busy/Paused"}
-                </p>
-              </div>
+            {/* Nút Trở thành trọng tài / Trạng thái tiếp nhận */}
+            {!isArbitrator ? (
               <button
-                onClick={() => setIsAvailable(!isAvailable)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${
+                onClick={() => setIsArbitrator(true)}
+                className="flex items-center gap-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-black uppercase tracking-widest shadow-xl transition-all active:scale-95"
+              >
+                <UserPlus size={18} />
+                {lang === "vi" ? "Trở thành trọng tài" : "Become an Arbitrator"}
+              </button>
+            ) : (
+              <div
+                className={`p-4 rounded-sm border flex items-center gap-4 transition-all duration-500 ${
                   isAvailable
-                    ? "bg-red-600 hover:bg-red-700 text-white shadow-lg"
-                    : "bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                    ? "bg-slate-800/50 border-slate-700"
+                    : "bg-red-950/40 border-red-900/50"
                 }`}
               >
-                {isAvailable ? (
-                  <PauseCircle size={14} />
-                ) : (
-                  <PlayCircle size={14} />
-                )}
-                {isAvailable
-                  ? lang === "vi"
-                    ? "Tạm nghỉ"
-                    : "Go Pause"
-                  : lang === "vi"
-                    ? "Tiếp nhận"
-                    : "Go Active"}
-              </button>
-            </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">
+                    {lang === "vi" ? "Trạng thái tiếp nhận" : "Intake Status"}
+                  </p>
+                  <p
+                    className={`text-[11px] font-bold uppercase ${isAvailable ? "text-green-400" : "text-red-400"}`}
+                  >
+                    {isAvailable
+                      ? lang === "vi"
+                        ? "Đang trực"
+                        : "Available"
+                      : lang === "vi"
+                        ? "Đang nghỉ"
+                        : "Busy/Paused"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsAvailable(!isAvailable)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${
+                    isAvailable
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  } text-white shadow-lg`}
+                >
+                  {isAvailable ? (
+                    <PauseCircle size={14} />
+                  ) : (
+                    <PlayCircle size={14} />
+                  )}
+                  {isAvailable
+                    ? lang === "vi"
+                      ? "Tạm nghỉ"
+                      : "Go Pause"
+                    : lang === "vi"
+                      ? "Tiếp nhận"
+                      : "Go Active"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <main className="max-w-6xl mx-auto px-4 -mt-8">
-        {/* Banner cảnh báo trạng thái nghỉ */}
-        {!isAvailable && (
+        {/* Banner cảnh báo khi tạm nghỉ */}
+        {isArbitrator && !isAvailable && (
           <div className="mb-4 bg-red-600 text-white p-3 rounded-sm flex items-center justify-center gap-3 animate-pulse shadow-lg">
             <ShieldAlert size={16} />
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">
@@ -165,34 +211,7 @@ function ArbitrationPortalContent({ params }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Sidebar Tabs */}
           <aside className="lg:col-span-3 space-y-1">
-            {[
-              {
-                id: "overview",
-                label: lang === "vi" ? "Tổng quan" : "Overview",
-                icon: <LayoutDashboard size={18} />,
-              },
-              {
-                id: "active-cases",
-                label: lang === "vi" ? "Đội ngũ trọng tài" : "The Arbitrators",
-                icon: <ShieldAlert size={18} />,
-              },
-              {
-                id: "arbitrations",
-                label:
-                  lang === "vi" ? "Xử lý tranh chấp" : "Dispute Resolution",
-                icon: <Scale size={18} />,
-              }, // Tab mới
-              // {
-              //   id: "history",
-              //   label: lang === "vi" ? "Lịch sử phán quyết" : "History",
-              //   icon: <History size={18} />,
-              // },
-              {
-                id: "rules",
-                label: lang === "vi" ? "Quy định" : "Rules",
-                icon: <ShieldCheck size={18} />,
-              },
-            ].map((tab) => (
+            {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
@@ -217,9 +236,9 @@ function ArbitrationPortalContent({ params }) {
                       ? "Bảng điều khiển chung"
                       : "General Dashboard")}
                   {activeTab === "active-cases" &&
-                    (lang === "vi" ? "Hồ sơ chờ phán quyết" : "Active Files")}
-                  {/* {activeTab === "history" &&
-                    (lang === "vi" ? "Lịch sử phán quyết" : "Judgment History")} */}
+                    (lang === "vi" ? "Đội ngũ trọng tài" : "The Arbitrators")}
+                  {activeTab === "arbitrations" &&
+                    (lang === "vi" ? "Xử lý tranh chấp" : "Dispute Resolution")}
                 </h2>
               </div>
 
@@ -242,25 +261,23 @@ function ArbitrationPortalContent({ params }) {
                   </div>
                 )}
 
-                {
+                {isArbitrator &&
                   activeTab === "arbitrations" &&
-                    (viewMode === "arbitration-detail" ? (
-                      <ArbitrationDetail
-                        data={selectedItem}
-                        lang={lang}
-                        onBack={() => setViewMode("list")}
-                      />
-                    ) : (
-                      <ArtritrationList
-                        lang={lang}
-                        onViewDetail={(item) => {
-                          setSelectedItem(item);
-                          setViewMode("arbitration-detail");
-                        }}
-                      />
-                    ))
-                  // <div>Test Dispute Tab</div>
-                }
+                  (viewMode === "arbitration-detail" ? (
+                    <ArbitrationDetail
+                      data={selectedItem}
+                      lang={lang}
+                      onBack={() => setViewMode("list")}
+                    />
+                  ) : (
+                    <ArtritrationList
+                      lang={lang}
+                      onViewDetail={(item) => {
+                        setSelectedItem(item);
+                        setViewMode("arbitration-detail");
+                      }}
+                    />
+                  ))}
               </div>
             </div>
           </div>
