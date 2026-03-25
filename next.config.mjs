@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export", // Chế độ trang tĩnh
-  //  basePath: "/Auction",
+  basePath: "/Auction",
   // assetPrefix: "/Auction/",
   reactStrictMode: true,
   // swcMinify: true,
