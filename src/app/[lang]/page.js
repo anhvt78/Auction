@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getDictionary } from "@/lib/get-dictionary";
@@ -24,8 +24,10 @@ import {
 function AuctionContent({ params }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false); // State cho menu ngôn ngữ
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const langRef = useRef(null);
 
   // Giải nén params bằng React.use cho Next.js 15+
   const { lang } = React.use(params);
@@ -35,9 +37,20 @@ function AuctionContent({ params }) {
     getDictionary(lang).then(setDict);
   }, [lang]);
 
-  // Hàm xử lý đóng menu khi nhấn vào link điều hướng
+  // Xử lý đóng menu ngôn ngữ khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langRef.current && !langRef.current.contains(event.target)) {
+        setIsLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleNavigation = () => {
     setIsMenuOpen(false);
+    setIsLangOpen(false);
   };
 
   if (!dict) {
@@ -48,12 +61,10 @@ function AuctionContent({ params }) {
     );
   }
 
-  // Chuyển đổi hiển thị giữa Dashboard và Danh sách đấu giá
   if (id === "dashboard") {
     return <UserDashboard lang={lang} />;
   }
 
-  // Dữ liệu mẫu (Giả lập từ Smart Contract)
   const auctions = [
     {
       id: 1,
@@ -165,7 +176,7 @@ function AuctionContent({ params }) {
               </Link>
             )}
 
-             {isLoggedIn && (
+            {isLoggedIn && (
               <Link
                 href={`/${lang}?id=dashboard`}
                 onClick={handleNavigation}
@@ -202,6 +213,42 @@ function AuctionContent({ params }) {
           </div>
         )}
       </nav>
+
+      {/* 2. Lựa chọn ngôn ngữ - Đã sửa thành Click để mở */}
+      <div className="max-w-6xl mx-auto px-4 py-2 flex justify-end">
+        <div className="relative" ref={langRef}>
+          <button
+            onClick={() => setIsLangOpen(!isLangOpen)}
+            className="flex items-center gap-1 text-slate-600 text-[13px] hover:text-slate-900 transition-colors font-medium"
+          >
+            <Globe size={14} className="text-slate-500" />
+            <span>{lang === "vi" ? "Tiếng Việt" : "English (US)"}</span>
+            <ChevronDown
+              size={12}
+              className={`transition-transform ${isLangOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {isLangOpen && (
+            <div className="absolute right-0 top-full mt-1 w-44 bg-white text-slate-800 shadow-xl rounded-sm border border-slate-200 z-50 overflow-hidden">
+              <Link
+                href="/en"
+                onClick={() => setIsLangOpen(false)}
+                className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "en" ? "bg-blue-50 text-blue-700 font-bold" : ""}`}
+              >
+                English (United States)
+              </Link>
+              <Link
+                href="/vi"
+                onClick={() => setIsLangOpen(false)}
+                className={`block px-4 py-2 text-sm hover:bg-slate-100 ${lang === "vi" ? "bg-blue-50 text-blue-700 font-bold" : ""}`}
+              >
+                Tiếng Việt
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* 3. Main Content */}
       <main className="max-w-6xl mx-auto my-4 bg-white shadow-sm border border-slate-200 rounded-sm overflow-hidden">
@@ -277,7 +324,6 @@ function AuctionContent({ params }) {
   );
 }
 
-// Export mặc định được bao bọc bởi Suspense để vượt qua kiểm tra build
 export default function AuctionPage({ params }) {
   return (
     <Suspense
