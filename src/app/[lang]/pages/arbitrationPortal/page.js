@@ -173,13 +173,14 @@ function ArbitrationPortalContent({ params }) {
               },
               {
                 id: "active-cases",
-                label: lang === "vi" ? "Vụ việc xử lý" : "Active Cases",
+                label: lang === "vi" ? "Đội ngũ trọng tài" : "The Arbitrators",
                 icon: <ShieldAlert size={18} />,
               },
               {
                 id: "arbitrations",
-                label: lang === "vi" ? "Xử lý tranh chấp" : "Arbitrations",
-                icon: <Gavel size={18} />,
+                label:
+                  lang === "vi" ? "Xử lý tranh chấp" : "Dispute Resolution",
+                icon: <Scale size={18} />,
               }, // Tab mới
               // {
               //   id: "history",

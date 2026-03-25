@@ -150,15 +150,15 @@ export default function UserDashboard({ lang }) {
                 (lang === "vi" ? "Tổng quan hoạt động" : "Activity Overview")}
               {activeTab === "my-auctions" &&
                 (lang === "vi"
-                  ? "Lô hàng bạn đang đăng bán"
+                  ? "Các lô hàng bạn đang bán đấu giá"
                   : "My Selling Lots")}
               {activeTab === "bid" &&
                 (lang === "vi"
-                  ? "Các lô hàng bạn đang đấu giá"
+                  ? "Các lô hàng bạn đang tham gia đấu giá"
                   : "Your Bidding")}
               {activeTab === "disputes" &&
                 (lang === "vi"
-                  ? "Các lô hàng bạn đang tranh chấp"
+                  ? "Các lô hàng đấu giá bạn tham gia đang tranh chấp"
                   : "Your Bidding Disputes")}
               {activeTab === "settings" &&
                 (lang === "vi" ? "Thiết lập tài khoản" : "Account Settings")}
