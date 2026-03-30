@@ -1,18 +1,19 @@
 "use client";
 import React from "react";
 import { 
-  ShieldCheck, 
-  Star, 
-  Gavel, 
-  CheckCircle2, 
-  Clock, 
-  Award, 
-  ChevronLeft,
-  ExternalLink
+  ShieldCheck, Star, CheckCircle2, Clock, 
+  Award, ChevronLeft, ExternalLink, BadgeDollarSign, ShieldAlert 
 } from "lucide-react";
 
 export default function ArbitratorProfile({ data, lang, onBack }) {
   if (!data) return null;
+
+  // Giả định dữ liệu biểu phí
+  const feeData = {
+    base: "50 LYX",
+    commission: "2%",
+    collateral: "500 LYX"
+  };
 
   const specialties = lang === "vi" 
     ? ["Hợp đồng thông minh", "Tài sản số", "Gia phả & Di chúc số"] 
@@ -43,8 +44,32 @@ export default function ArbitratorProfile({ data, lang, onBack }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Cột trái: Chỉ số */}
+        {/* Cột trái: Chỉ số & Biểu phí */}
         <div className="space-y-6">
+          {/* BẢNG BIỂU PHÍ MỚI */}
+          <div className="bg-slate-900 text-white p-6 rounded-sm shadow-xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-2 opacity-10"><BadgeDollarSign size={60} /></div>
+             <h4 className="text-[10px] font-black text-blue-400 uppercase mb-4 tracking-widest">
+               {lang === "vi" ? "Biểu phí dịch vụ" : "Service Fees"}
+             </h4>
+             <div className="space-y-4 relative z-10">
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="text-xs text-slate-400">{lang === "vi" ? "Phí cố định" : "Fixed Fee"}</span>
+                  <span className="font-black text-sm">{feeData.base}</span>
+                </div>
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="text-xs text-slate-400">{lang === "vi" ? "Hoa hồng" : "Commission"}</span>
+                  <span className="font-black text-sm">{feeData.commission}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-slate-400 flex items-center gap-1">
+                    {lang === "vi" ? "Bảo lãnh" : "Collateral"} <ShieldAlert size={10} className="text-orange-400" />
+                  </span>
+                  <span className="font-black text-sm text-orange-400">{feeData.collateral}</span>
+                </div>
+             </div>
+          </div>
+
           <div className="bg-slate-50 p-6 rounded-sm border border-slate-100">
             <h4 className="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">
               {lang === "vi" ? "Thống kê hiệu suất" : "Performance Stats"}
@@ -88,10 +113,10 @@ export default function ArbitratorProfile({ data, lang, onBack }) {
               <Award size={16} className="text-blue-500" />
               {lang === "vi" ? "Giới thiệu năng lực" : "Professional Bio"}
             </h4>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed italic">
               {lang === "vi" 
-                ? `${data.name} là đơn vị trọng tài có kinh nghiệm lâu năm trong việc giải quyết các tranh chấp liên quan đến số hóa tư liệu và tài sản blockchain. Chúng tôi cam kết tính minh bạch tuyệt đối trên mạng lưới.`
-                : `${data.name} is an experienced arbitration unit specializing in digital records and blockchain asset disputes. We guarantee absolute transparency on-chain.`}
+                ? `"${data.name} - Minh bạch, Công bằng, Nhanh chóng. Chúng tôi là đơn vị trọng tài có kinh nghiệm lâu năm trong việc giải quyết các tranh chấp liên quan đến số hóa tư liệu và tài sản blockchain."`
+                : `"${data.name} - Transparent, Fair, Fast. We are an experienced arbitration unit specializing in digital records and blockchain asset disputes."`}
             </p>
           </div>
 
