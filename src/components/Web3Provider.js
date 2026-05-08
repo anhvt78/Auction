@@ -36,7 +36,9 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: 'Blockchain Auction',
-    projectId: 'YOUR_WALLET_CONNECT_ID', // Lưu ý: Thay thế bằng ID thực tế từ cloud.walletconnect.com
+    // Lấy ID tại https://cloud.walletconnect.com
+    // Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID trong .env.local
+    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_WALLETCONNECT_PROJECT_ID',
   }
 );
 
